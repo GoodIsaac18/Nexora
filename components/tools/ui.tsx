@@ -1,33 +1,30 @@
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-export function Panel({ children, className }: { children: ReactNode; className?: string }) {
+export function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("rounded-2xl border border-border bg-card p-4 sm:p-5", className)}>{children}</div>
+    <div className={cn(
+      "rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:border-primary/30 lg:rounded-3xl lg:border-2 lg:bg-card/80 lg:backdrop-blur-sm lg:p-8 lg:shadow-lg lg:hover:shadow-xl lg:hover:shadow-primary/10 animate-scale-in",
+      className
+    )}>
+      {children}
+    </div>
   )
 }
 
-export function FieldLabel({ children, htmlFor }: { children: ReactNode; htmlFor?: string }) {
+export function FieldLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
-    <label htmlFor={htmlFor} className="mb-2 block text-sm font-medium">
+    <label htmlFor={htmlFor} className="mb-2 block text-sm font-medium transition-colors hover:text-primary lg:mb-3 lg:text-base lg:font-semibold">
       {children}
     </label>
   )
 }
 
-export function textAreaClass(extra?: string) {
-  return cn(
-    "scroll-thin w-full resize-y rounded-xl border border-border bg-background p-3 font-mono text-sm leading-relaxed outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10",
-    extra,
-  )
-}
+export const inputClass = () =>
+  "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-all placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10 hover:border-primary/30 lg:rounded-2xl lg:border-2 lg:bg-background/50 lg:backdrop-blur-sm lg:px-5 lg:py-4 lg:text-base lg:focus:bg-background"
 
-export function inputClass(extra?: string) {
-  return cn(
-    "h-10 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10",
-    extra,
-  )
-}
+export const textAreaClass = () =>
+  "w-full min-h-[200px] rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-all placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10 resize-y hover:border-primary/30 lg:rounded-2xl lg:border-2 lg:bg-background/50 lg:backdrop-blur-sm lg:px-5 lg:py-4 lg:text-base"
 
 export function ActionButton({
   children,
@@ -37,7 +34,7 @@ export function ActionButton({
   className,
   disabled,
 }: {
-  children: ReactNode
+  children: React.ReactNode
   onClick?: () => void
   variant?: "primary" | "outline"
   type?: "button" | "submit"
@@ -50,10 +47,10 @@ export function ActionButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "inline-flex h-10 items-center justify-center gap-1.5 rounded-xl px-4 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+        "group inline-flex h-11 items-center justify-center gap-2 rounded-xl px-6 text-sm font-medium transition-all duration-300 lg:h-14 lg:gap-3 lg:rounded-2xl lg:px-8 lg:text-base lg:font-semibold",
         variant === "primary"
-          ? "bg-primary text-primary-foreground hover:bg-primary/90"
-          : "border border-border bg-background hover:bg-muted",
+          ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 active:scale-95 disabled:pointer-events-none disabled:opacity-50 lg:hover:scale-105 lg:hover:shadow-xl lg:hover:shadow-primary/30 lg:bg-gradient-to-r lg:from-primary lg:to-primary/80"
+          : "border border-border bg-background hover:bg-muted active:scale-95 disabled:pointer-events-none disabled:opacity-50 lg:border-2 lg:bg-background/50 lg:backdrop-blur-sm lg:hover:border-primary/50 lg:hover:scale-105",
         className,
       )}
     >

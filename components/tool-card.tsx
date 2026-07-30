@@ -7,28 +7,31 @@ export function ToolCard({ tool, className }: { tool: Tool; className?: string }
   const Icon = tool.icon
   const content = (
     <>
-      <div className="flex items-start justify-between gap-3">
-        <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
-          <Icon className="size-5" />
+      <div className="flex items-start justify-between gap-3 lg:gap-4">
+        <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 lg:size-14 lg:rounded-2xl lg:bg-gradient-to-br lg:from-accent lg:to-accent/80 lg:group-hover:from-primary lg:group-hover:to-primary/80 lg:group-hover:text-primary-foreground lg:group-hover:shadow-lg lg:group-hover:shadow-primary/30">
+          <Icon className="size-5 lg:size-7" />
         </span>
         {tool.available ? (
-          <ArrowRight className="size-5 -translate-x-1 text-muted-foreground opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
+          <ArrowRight className="size-5 -translate-x-1 text-muted-foreground opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 group-hover:text-primary lg:size-6 lg:-translate-x-2" />
         ) : (
-          <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+          <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground lg:px-3 lg:py-1 lg:text-xs lg:font-semibold">
             Soon
           </span>
         )}
       </div>
-      <h3 className="mt-4 font-semibold tracking-tight">{tool.name}</h3>
-      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{tool.description}</p>
+      <h3 className="mt-4 font-semibold tracking-tight group-hover:text-primary transition-colors lg:mt-5 lg:text-lg lg:font-bold">{tool.name}</h3>
+      <p className="mt-1 text-sm leading-relaxed text-muted-foreground group-hover:text-foreground/80 transition-colors lg:mt-2">{tool.description}</p>
+      
+      {/* Decorative gradient on hover - only on large screens */}
+      <div className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:rounded-3xl" />
     </>
   )
 
   const base =
-    "group relative flex flex-col rounded-2xl border border-border bg-card p-5 transition-all duration-300"
+    "group relative flex flex-col rounded-2xl border border-border bg-card p-5 transition-all duration-300 lg:rounded-3xl lg:border-2 lg:bg-card/80 lg:backdrop-blur-sm lg:p-6 lg:duration-500"
 
   if (!tool.available) {
-    return <div className={cn(base, "opacity-70", className)}>{content}</div>
+    return <div className={cn(base, "opacity-70 grayscale", className)}>{content}</div>
   }
 
   return (
@@ -36,7 +39,7 @@ export function ToolCard({ tool, className }: { tool: Tool; className?: string }
       href={`/${tool.slug}`}
       className={cn(
         base,
-        "hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hover:-translate-y-2 lg:hover:border-primary/50 lg:hover:shadow-2xl lg:hover:shadow-primary/20 lg:focus-visible:ring-4 lg:focus-visible:ring-primary/30 lg:active:scale-95 lg:active:translate-y-0",
         className,
       )}
     >
