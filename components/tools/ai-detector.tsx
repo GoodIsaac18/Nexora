@@ -94,7 +94,7 @@ ${inputText}`
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4">
+    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 sm:px-0">
       <Panel>
         <FieldLabel htmlFor="input-text">Texto a analizar</FieldLabel>
         <textarea
@@ -107,8 +107,8 @@ ${inputText}`
           minLength={50}
         />
 
-        <div className="mt-4 flex gap-2">
-          <ActionButton onClick={analyzeText} disabled={inputText.length < 50 || isAnalyzing || isCooldown}>
+        <div className="mt-4 flex flex-col sm:flex-row gap-2">
+          <ActionButton onClick={analyzeText} disabled={inputText.length < 50 || isAnalyzing || isCooldown} className="w-full sm:w-auto">
             {isAnalyzing ? (
               <>
                 <Search className="size-4 animate-spin" /> Analizando…
@@ -130,7 +130,7 @@ ${inputText}`
               setError(null)
               setIsCooldown(false)
             }}
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-border bg-background px-6 text-sm font-medium transition-colors hover:bg-muted"
+            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-xl border border-border bg-background px-6 text-sm font-medium transition-colors hover:bg-muted"
           >
             Limpiar
           </button>

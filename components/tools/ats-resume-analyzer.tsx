@@ -122,7 +122,7 @@ ${resumeText}${jobDescPart}`
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4">
+    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 sm:px-0">
       <Panel>
         <div className="flex items-center gap-2 mb-4">
           <Briefcase className="size-5" />
@@ -154,8 +154,8 @@ ${resumeText}${jobDescPart}`
             />
           </div>
 
-          <div className="flex gap-2">
-            <ActionButton onClick={analyzeResume} disabled={!resumeText.trim() || isAnalyzing || isCooldown}>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <ActionButton onClick={analyzeResume} disabled={!resumeText.trim() || isAnalyzing || isCooldown} className="w-full sm:w-auto">
               {isAnalyzing ? (
                 <>
                   <Search className="size-4 animate-spin" /> Analizando…
@@ -178,7 +178,7 @@ ${resumeText}${jobDescPart}`
                 setError(null)
                 setIsCooldown(false)
               }}
-              className="inline-flex h-11 items-center justify-center rounded-xl border border-border bg-background px-6 text-sm font-medium transition-colors hover:bg-muted"
+              className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-xl border border-border bg-background px-6 text-sm font-medium transition-colors hover:bg-muted"
             >
               Limpiar
             </button>

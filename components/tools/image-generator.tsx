@@ -65,7 +65,7 @@ export function ImageGenerator() {
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4">
+    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 sm:px-0">
       <Panel>
         <FieldLabel htmlFor="prompt">Describe la imagen que quieres generar</FieldLabel>
         <textarea
@@ -78,8 +78,8 @@ export function ImageGenerator() {
           maxLength={500}
         />
 
-        <div className="mt-4 flex gap-2">
-          <ActionButton onClick={generateImage} disabled={!prompt.trim() || isGenerating || isCooldown}>
+        <div className="mt-4 flex flex-col sm:flex-row gap-2">
+          <ActionButton onClick={generateImage} disabled={!prompt.trim() || isGenerating || isCooldown} className="w-full sm:w-auto">
             {isGenerating ? (
               <>
                 <Loader2 className="size-4 animate-spin" /> Generando…
@@ -101,7 +101,7 @@ export function ImageGenerator() {
               setError(null)
               setIsCooldown(false)
             }}
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-border bg-background px-6 text-sm font-medium transition-colors hover:bg-muted"
+            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-xl border border-border bg-background px-6 text-sm font-medium transition-colors hover:bg-muted"
           >
             Limpiar
           </button>

@@ -96,15 +96,15 @@ export function AiChat() {
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4">
-      <Panel className="flex flex-col h-[600px]">
+    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 sm:px-0">
+      <Panel className="flex flex-col h-[600px] sm:h-[700px]">
         <div className="flex items-center justify-between border-b border-border p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
               <Bot className="size-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold">Asistente de IA</h3>
+              <h3 className="font-semibold text-sm sm:text-base">Asistente de IA</h3>
               <p className="text-xs text-muted-foreground">Powered by Google AI</p>
             </div>
           </div>
@@ -136,13 +136,13 @@ export function AiChat() {
                 </div>
               )}
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
+                className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
                   message.role === "user"
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted"
                 }`}
               >
-                <p className="whitespace-pre-wrap">{message.content}</p>
+                <p className="whitespace-pre-wrap break-words">{message.content}</p>
               </div>
             </div>
           ))}
@@ -180,7 +180,7 @@ export function AiChat() {
             <button
               onClick={handleSend}
               disabled={!input.trim() || isLoading || isCooldown}
-              className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary/90 disabled:opacity-50 self-end"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary/90 disabled:opacity-50 self-end"
             >
               {isLoading ? (
                 <Sparkles className="size-5 animate-pulse" />
@@ -197,7 +197,7 @@ export function AiChat() {
         </div>
       </Panel>
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-muted-foreground px-4 sm:px-0">
         El chat usa Google AI (Gemini 3.5 Flash Lite). Hay un límite de 2 segundos entre peticiones para no saturar la API.
       </p>
     </div>

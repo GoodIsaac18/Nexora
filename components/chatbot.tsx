@@ -115,20 +115,20 @@ export function Chatbot() {
 
       {/* Modal del chat */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 flex w-96 flex-col rounded-2xl border border-border bg-background shadow-2xl">
+        <div className="fixed bottom-24 right-4 sm:right-6 z-50 flex w-[calc(100vw-2rem)] sm:w-96 flex-col rounded-2xl border border-border bg-background shadow-2xl">
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-border p-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
               <Bot className="size-5 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold">Asistente Nexora</h3>
+              <h3 className="font-semibold text-sm sm:text-base">Asistente Nexora</h3>
               <p className="text-xs text-muted-foreground">Conoce todas las herramientas</p>
             </div>
           </div>
 
           {/* Mensajes */}
-          <div className="flex h-96 flex-col overflow-y-auto p-4 space-y-4">
+          <div className="flex h-80 sm:h-96 flex-col overflow-y-auto p-4 space-y-4">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -142,13 +142,13 @@ export function Chatbot() {
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
+                  className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
                     message.role === "user"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted"
                   }`}
                 >
-                  <p>{message.content}</p>
+                  <p className="whitespace-pre-wrap break-words">{message.content}</p>
                   {message.toolSuggestion && (
                     <p className="mt-2 text-xs opacity-75">
                       🚀 Redirigiendo a {message.toolSuggestion}...
@@ -185,7 +185,7 @@ export function Chatbot() {
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading || isCooldown}
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
               >
                 <Send className="size-4" />
               </button>
