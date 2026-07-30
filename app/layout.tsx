@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { AdSenseScript } from "@/components/adsense-loader"
 import { ThemeScript } from "@/components/theme-script"
+import { Chatbot } from "@/components/chatbot"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -79,6 +80,7 @@ export default function RootLayout({
         </div>
         <AdSenseScript />
         {process.env.NODE_ENV === "production" && <Analytics />}
+        <Chatbot />
       </body>
     </html>
   )
