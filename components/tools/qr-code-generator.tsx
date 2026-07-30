@@ -1,0 +1,74 @@
+"use client"
+
+import { useEffect, useRef, useState } from "react"
+import QRCode from "qrcode"
+import { CopyButton } from "@/components/copy-button"
+import { FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+
+export function QrCodeGenerator() {
+  const [text, setText] = useState("https://example.com")
+  const [size, setSize] = useState(256)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas || !text.trim()) return
+    setError("")
+    QRCode.toCanvas(canvas, text, { width: size, margin: 2 }, (err) => {
+      if (err) setError("Could not generate QR code for this content.")
+    })
+  }, [text, size])
+
+  function downloadPng() {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const a = document.createElement("a")
+    a.download = "qrcode.png"
+    a.href = canvas.toDataURL("image/png")
+    a.click()
+  }
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <Panel>
+        <FieldLabel htmlFor="qr-text">URL or text</FieldLabel>
+        <textarea
+          id="qr-text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className={textAreaClass("min-h-[120px]")}
+          placeholder="https://… or any text"
+        />
+        <div className="mt-4">
+          <FieldLabel htmlFor="qr-size">Size ({size}px)</FieldLabel>
+          <input
+            id="qr-size"
+            type="range"
+            min={128}
+            max={512}
+            step={32}
+            value={size}
+            onChange={(e) => setSize(Number(e.target.value))}
+            className="w-full"
+          />
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <CopyButton value={text} label="Copy text" />
+        </div>
+      </Panel>
+      <Panel className="flex flex-col items-center justify-center gap-4">
+        <canvas ref={canvasRef} className="rounded-xl border border-border bg-white p-2" />
+        {error && <p className="text-sm text-destructive">{error}</p>}
+        <button
+          type="button"
+          onClick={downloadPng}
+          disabled={!text.trim()}
+          className="inline-flex h-10 items-center rounded-xl border border-border bg-background px-4 text-sm font-medium hover:bg-muted disabled:opacity-50"
+        >
+          Download PNG
+        </button>
+      </Panel>
+    </div>
+  )
+}
