@@ -1,5 +1,9 @@
+import Script from "next/script"
+
 export function ThemeScript() {
-  const themeScript = `
+  return (
+    <Script id="theme-script" strategy="beforeInteractive">
+      {`
 (function() {
   try {
     var t = localStorage.getItem('theme');
@@ -9,8 +13,7 @@ export function ThemeScript() {
     if (t) document.documentElement.classList.add(t);
   } catch (e) {}
 })();
-`
-  return (
-    <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      `}
+    </Script>
   )
 }
