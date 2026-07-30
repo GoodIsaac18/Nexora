@@ -3,12 +3,19 @@
 import { useState, useRef } from "react"
 import { Download, Upload, FileText, Image as ImageIcon, Loader2, AlertCircle } from "lucide-react"
 import { ActionButton, FieldLabel, Panel, inputClass } from "@/components/tools/ui"
+import * as pdfjsLib from "pdfjs-dist"
+
+// Set worker source to use local worker
+if (typeof window !== "undefined") {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js"
+}
 
 export function PdfToJpg() {
   const [file, setFile] = useState<File | null>(null)
   const [converting, setConverting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [downloadUrls, setDownloadUrls] = useState<string[]>([])
+  const [totalPages, setTotalPages] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,6 +29,7 @@ export function PdfToJpg() {
       setFile(selected)
       setError(null)
       setDownloadUrls([])
+      setTotalPages(0)
     }
   }
 
@@ -37,6 +45,7 @@ export function PdfToJpg() {
       setFile(dropped)
       setError(null)
       setDownloadUrls([])
+      setTotalPages(0)
     }
   }
 
@@ -52,21 +61,42 @@ export function PdfToJpg() {
     setDownloadUrls([])
 
     try {
-      const formData = new FormData()
-      formData.append("file", file)
+      const arrayBuffer = await file.arrayBuffer()
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+      
+      setTotalPages(pdf.numPages)
+      const convertedUrls: string[] = []
 
-      const response = await fetch("/api/pdf/to-jpg", {
-        method: "POST",
-        body: formData,
-      })
+      // Convert each page to JPG
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum)
+        const scale = 2.0 // Higher scale for better quality
+        const viewport = page.getViewport({ scale })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Error en la conversión")
+        const canvas = document.createElement("canvas")
+        const context = canvas.getContext("2d")
+        
+        if (!context) {
+          throw new Error("No se pudo crear el contexto del canvas")
+        }
+
+        canvas.height = viewport.height
+        canvas.width = viewport.width
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+          canvas: canvas,
+        }
+
+        await page.render(renderContext).promise
+
+        // Convert canvas to JPG
+        const imageUrl = canvas.toDataURL("image/jpeg", 0.9)
+        convertedUrls.push(imageUrl)
       }
 
-      const data = await response.json()
-      setDownloadUrls(data.urls || [])
+      setDownloadUrls(convertedUrls)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al convertir el archivo. Intenta de nuevo.")
     } finally {
@@ -84,10 +114,17 @@ export function PdfToJpg() {
     document.body.removeChild(a)
   }
 
+  const downloadAll = () => {
+    downloadUrls.forEach((url, index) => {
+      setTimeout(() => handleDownload(url, index), index * 500)
+    })
+  }
+
   const resetConverter = () => {
     setFile(null)
     setError(null)
     setDownloadUrls([])
+    setTotalPages(0)
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
@@ -152,7 +189,7 @@ export function PdfToJpg() {
         )}
 
         <p className="mt-4 text-xs text-muted-foreground">
-          La conversión se realiza en el servidor. Los archivos se eliminan después del procesamiento.
+          La conversión se realiza localmente en tu navegador usando PDF.js. Tus archivos nunca se suben a ningún servidor.
         </p>
       </Panel>
 
@@ -165,18 +202,28 @@ export function PdfToJpg() {
 
       {downloadUrls.length > 0 && (
         <Panel className="flex flex-col gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-              <Download className="size-5 text-primary" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                <Download className="size-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-medium">¡Conversión completada!</p>
+                <p className="text-sm text-muted-foreground">
+                  {downloadUrls.length} página{downloadUrls.length > 1 ? "s" : ""} convertida{downloadUrls.length > 1 ? "s" : ""}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium">¡Conversión completada!</p>
-              <p className="text-sm text-muted-foreground">
-                {downloadUrls.length} página{downloadUrls.length > 1 ? "s" : ""} convertida{downloadUrls.length > 1 ? "s" : ""}
-              </p>
-            </div>
+            {downloadUrls.length > 1 && (
+              <button
+                onClick={downloadAll}
+                className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-medium transition-colors hover:bg-muted"
+              >
+                Descargar todas
+              </button>
+            )}
           </div>
-          <div className="grid gap-2">
+          <div className="grid gap-2 sm:grid-cols-2">
             {downloadUrls.map((url, index) => (
               <button
                 key={index}

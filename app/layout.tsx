@@ -5,6 +5,7 @@ import { SITE } from "@/lib/tools"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { AdSenseScript } from "@/components/adsense-loader"
+import { ThemeScript } from "@/components/theme-script"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -55,18 +56,6 @@ export const viewport: Viewport = {
   ],
 }
 
-const themeScript = `
-(function() {
-  try {
-    var t = localStorage.getItem('theme');
-    var m = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (t === 'dark' || (!t && m)) document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-    if (t) document.documentElement.classList.add(t);
-  } catch (e) {}
-})();
-`
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -80,7 +69,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <ThemeScript />
       </head>
       <body className="min-h-dvh font-sans antialiased">
         <div className="flex min-h-dvh flex-col">

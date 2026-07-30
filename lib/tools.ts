@@ -425,7 +425,7 @@ export const tools: Tool[] = [
     category: "pdf",
     keywords: ["pdf unlocker", "pdf password remover", "unlock pdf", "desbloquear pdf"],
     icon: Unlock,
-    available: true,
+    available: false,
   },
   {
     slug: "pdf-merger",
