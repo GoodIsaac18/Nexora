@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { RefreshCw, Copy, Check, Sparkles, AlertCircle } from "lucide-react"
 import { ActionButton, FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { sanitizeInput, secureInput } from "@/lib/security"
 
 export function Paraphraser() {
   const [inputText, setInputText] = useState("")
@@ -14,6 +15,17 @@ export function Paraphraser() {
 
   const paraphraseText = async () => {
     if (!inputText.trim() || isParaphrasing || isCooldown) return
+
+    // Sanitizar input
+    const { sanitized, isValid } = secureInput(inputText, {
+      maxLength: 10000,
+      minLength: 1
+    })
+
+    if (!isValid) {
+      setError("El texto contiene caracteres no permitidos o excede el límite de longitud.")
+      return
+    }
 
     setIsParaphrasing(true)
     setIsCooldown(true)

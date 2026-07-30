@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { MessageCircle, X, Send, Bot, Sparkles } from "lucide-react"
+import { X, Send, Sparkles, MessageCircle, Bot } from "lucide-react"
+import { secureInput } from "@/lib/security"
 
 interface Message {
   role: "user" | "assistant"
@@ -33,7 +34,22 @@ export function Chatbot() {
   const handleSend = async () => {
     if (!input.trim() || isLoading || isCooldown) return
 
-    const userMessage = input.trim()
+    // Sanitizar input
+    const { sanitized, isValid } = secureInput(input, {
+      maxLength: 500,
+      minLength: 1
+    })
+
+    if (!isValid) {
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "El mensaje contiene caracteres no permitidos. Por favor usa solo texto normal."
+      }])
+      setInput("")
+      return
+    }
+
+    const userMessage = sanitized
     setInput("")
     setMessages(prev => [...prev, { role: "user", content: userMessage }])
     setIsLoading(true)
@@ -87,13 +103,13 @@ export function Chatbot() {
       {/* Botón flotante */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-green-500 text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl"
         aria-label="Abrir chatbot"
       >
         {isOpen ? (
           <X className="size-6" />
         ) : (
-          <MessageCircle className="size-6" />
+          <MessageCircle className="size-7" />
         )}
       </button>
 

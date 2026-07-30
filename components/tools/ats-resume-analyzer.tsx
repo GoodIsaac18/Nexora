@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Briefcase, CheckCircle, AlertTriangle, XCircle, FileText, Search, Award, GraduationCap, AlertCircle } from "lucide-react"
 import { ActionButton, FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { secureInput } from "@/lib/security"
 
 export function AtsResumeAnalyzer() {
   const [resumeText, setResumeText] = useState("")
@@ -20,6 +21,29 @@ export function AtsResumeAnalyzer() {
 
   const analyzeResume = async () => {
     if (!resumeText.trim() || isAnalyzing || isCooldown) return
+
+    // Sanitizar inputs
+    const resumeValidation = secureInput(resumeText, {
+      maxLength: 15000,
+      minLength: 100
+    })
+
+    if (!resumeValidation.isValid) {
+      setError("El CV contiene caracteres no permitidos o excede el límite de longitud.")
+      return
+    }
+
+    if (jobDescription.trim()) {
+      const jobValidation = secureInput(jobDescription, {
+        maxLength: 5000,
+        minLength: 10
+      })
+
+      if (!jobValidation.isValid) {
+        setError("La descripción del trabajo contiene caracteres no permitidos o excede el límite de longitud.")
+        return
+      }
+    }
 
     setIsAnalyzing(true)
     setIsCooldown(true)

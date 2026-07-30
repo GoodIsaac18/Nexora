@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Bot, BrainCircuit, AlertTriangle, CheckCircle, Search, AlertCircle } from "lucide-react"
 import { ActionButton, FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { secureInput } from "@/lib/security"
 
 export function AiDetector() {
   const [inputText, setInputText] = useState("")
@@ -17,6 +18,17 @@ export function AiDetector() {
 
   const analyzeText = async () => {
     if (!inputText.trim() || isAnalyzing || isCooldown) return
+
+    // Sanitizar input
+    const { sanitized, isValid } = secureInput(inputText, {
+      maxLength: 10000,
+      minLength: 50
+    })
+
+    if (!isValid) {
+      setError("El texto contiene caracteres no permitidos o excede el límite de longitud.")
+      return
+    }
 
     setIsAnalyzing(true)
     setIsCooldown(true)
