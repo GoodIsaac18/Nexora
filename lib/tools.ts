@@ -50,6 +50,8 @@ import {
   Briefcase,
   GraduationCap,
   Award,
+  Image,
+  MessageSquare,
 } from "lucide-react"
 
 export const SITE = {
@@ -663,6 +665,30 @@ export const tools: Tool[] = [
     category: "text",
     keywords: ["ats analyzer", "resume checker", "cv analyzer", "ats friendly"],
     icon: Briefcase,
+    available: true,
+  },
+  {
+    slug: "image-generator",
+    name: "Image Generator",
+    title: "AI Image Generator",
+    description: "Generate images using AI from text descriptions.",
+    longDescription:
+      "Create stunning images from text descriptions using AI. Perfect for creative projects, social media, and design inspiration.",
+    category: "generators",
+    keywords: ["image generator", "ai image", "text to image", "create images"],
+    icon: Image,
+    available: true,
+  },
+  {
+    slug: "ai-chat",
+    name: "AI Chat",
+    title: "AI Assistant Chat",
+    description: "Chat with an AI assistant for general help.",
+    longDescription:
+      "Have a conversation with an AI assistant for general questions, help with tasks, or just to chat. Powered by Google AI.",
+    category: "text",
+    keywords: ["ai chat", "chatbot", "assistant", "gemini", "chat gpt"],
+    icon: MessageSquare,
     available: true,
   },
 ]
