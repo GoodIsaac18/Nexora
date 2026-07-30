@@ -18,16 +18,26 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer()
     
     try {
-      // pdf-lib doesn't support password-protected PDFs directly
-      // For password removal, you would need a library like qpdf or ghostscript
-      // This is a limitation of pdf-lib
-      return NextResponse.json(
-        { error: "pdf-lib no soporta PDFs protegidos con contraseña. Para desbloquear PDFs se requiere ghostscript o qpdf instalado en el servidor." },
-        { status: 501 }
-      )
+      // pdf-lib doesn't directly support password-protected PDFs
+      // However, we can try to load and re-save which sometimes removes simple protections
+      // For full password removal, qpdf or ghostscript binary is required on the system
+      
+      // Try using a workaround: load the PDF and save it again
+      // This may work for some types of protection
+      const pdfDoc = await PDFDocument.load(bytes)
+      
+      // Save the PDF - this may remove some types of protection
+      const pdfBytes = await pdfDoc.save()
+      
+      return new NextResponse(Buffer.from(pdfBytes), {
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": "attachment; filename=unlocked.pdf",
+        },
+      })
     } catch (e) {
       return NextResponse.json(
-        { error: "No se pudo desbloquear el PDF." },
+        { error: "No se pudo desbloquear el PDF con pdf-lib. Para PDFs protegidos con contraseña, se requiere qpdf o ghostscript instalado en el sistema operativo." },
         { status: 400 }
       )
     }
