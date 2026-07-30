@@ -25,14 +25,14 @@ export function CssShadowGenerator() {
   function generateShadowCSS() {
     const rgbaColor = hexToRgba(color, opacity / 100)
     const shadow = inset ? "inset " : ""
-    return `box-shadow: ${shadow}${horizontal}px ${vertical}px ${blur}px ${spread}px ${rgbaColor};`
+    return `box-shadow: ${shadow}${horizontal}px ${vertical}px ${blur}px ${spread}px ${rgbaColor}`
   }
 
   function generateGlassCSS() {
     return `
 background: rgba(255, 255, 255, ${glassSettings.opacity / 100});
 backdrop-filter: blur(${glassSettings.blur}px);
--webkit-backdrop-filter: blur(${glassSettings.blur}px});
+-webkit-backdrop-filter: blur(${glassSettings.blur}px);
 border: 1px solid rgba(255, 255, 255, 0.3);
 box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 `.trim()
