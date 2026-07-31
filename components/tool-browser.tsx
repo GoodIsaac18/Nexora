@@ -12,6 +12,15 @@ export function ToolBrowser() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const carouselRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const [visibleItems, setVisibleItems] = useState<Record<string, Set<number>>>({})
+  const [scrolledCarousels, setScrolledCarousels] = useState<Record<string, boolean>>({})
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -45,7 +54,7 @@ export function ToolBrowser() {
     }
   }
 
-  // Detectar elementos visibles en cada carrusel
+  // Detectar elementos visibles y scroll en cada carrusel
   useEffect(() => {
     const updateVisibleItems = () => {
       Object.keys(carouselRefs.current).forEach(categorySlug => {
@@ -53,21 +62,18 @@ export function ToolBrowser() {
         if (!container) return
 
         const containerRect = container.getBoundingClientRect()
-        const containerCenter = containerRect.left + containerRect.width / 2
         const items = container.querySelectorAll('[data-item-index]')
         
         const categoryVisible = new Set<number>()
         
         items.forEach((item, index) => {
           const itemRect = item.getBoundingClientRect()
-          const itemCenter = itemRect.left + itemRect.width / 2
           
-          // Calcular qué tan centrado está el elemento
-          const distanceFromCenter = Math.abs(itemCenter - containerCenter)
-          const maxDistance = containerRect.width / 2
+          // En móvil, usar una detección más permisiva
+          const buffer = isMobile ? 50 : 0
           
-          // Si está dentro del área visible del contenedor
-          if (itemRect.left >= containerRect.left && itemRect.right <= containerRect.right) {
+          // Si está dentro del área visible del contenedor (con buffer para móvil)
+          if (itemRect.left >= containerRect.left - buffer && itemRect.right <= containerRect.right + buffer) {
             categoryVisible.add(index)
           }
         })
@@ -76,17 +82,28 @@ export function ToolBrowser() {
           ...prev,
           [categorySlug]: categoryVisible
         }))
+
+        // Detectar si el carrusel ha sido scrolleado
+        const hasScrolled = container.scrollLeft > 10 // Reducir umbral para móvil
+        setScrolledCarousels(prev => ({
+          ...prev,
+          [categorySlug]: hasScrolled
+        }))
       })
     }
 
     // Actualizar inicialmente
     updateVisibleItems()
 
-    // Actualizar en scroll
+    // Actualizar en scroll con throttle para mejor rendimiento en móvil
+    let scrollTimeout: NodeJS.Timeout
     Object.keys(carouselRefs.current).forEach(categorySlug => {
       const container = carouselRefs.current[categorySlug]
       if (container) {
-        container.addEventListener('scroll', updateVisibleItems)
+        container.addEventListener('scroll', () => {
+          clearTimeout(scrollTimeout)
+          scrollTimeout = setTimeout(updateVisibleItems, 50) // Throttle más rápido para móvil
+        }, { passive: true })
       }
     })
 
@@ -94,6 +111,7 @@ export function ToolBrowser() {
     window.addEventListener('resize', updateVisibleItems)
 
     return () => {
+      clearTimeout(scrollTimeout)
       Object.keys(carouselRefs.current).forEach(categorySlug => {
         const container = carouselRefs.current[categorySlug]
         if (container) {
@@ -102,7 +120,7 @@ export function ToolBrowser() {
       })
       window.removeEventListener('resize', updateVisibleItems)
     }
-  }, [grouped])
+  }, [grouped, isMobile])
 
   return (
     <div id="search" className="scroll-mt-24">
@@ -189,27 +207,36 @@ export function ToolBrowser() {
                       ref={(el) => {
                         carouselRefs.current[category.slug] = el
                       }}
-                      className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 pt-2 scroll-smooth carousel-scrollbar"
+                      className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 pt-2 pl-8 pr-8 sm:pl-12 sm:pr-12 lg:pl-16 lg:pr-16 scroll-smooth carousel-scrollbar"
                       style={{
                         scrollSnapType: 'x mandatory',
+                        scrollPaddingInlineStart: isMobile ? '0px' : '32px',
+                        scrollPaddingInlineEnd: isMobile ? '0px' : '32px',
                         WebkitOverflowScrolling: 'touch'
                       }}
                     >
-                      {items.map((t, i) => (
-                        <div
-                          key={t.slug}
-                          data-category={category.slug}
-                          data-item-index={i}
-                          className="flex-shrink-0 w-[90vw] sm:w-[85vw] md:w-[45vw] lg:w-[30vw] transition-all duration-300"
-                          style={{
-                            scrollSnapAlign: 'start',
-                            opacity: visibleItems[category.slug]?.has(i) ? 1 : 0.3,
-                            transform: visibleItems[category.slug]?.has(i) ? 'scale(1)' : 'scale(0.95)'
-                          }}
-                        >
-                          <ToolCard tool={t} />
-                        </div>
-                      ))}
+                      {items.map((t, i) => {
+                        const hasScrolled = scrolledCarousels[category.slug] || false
+                        const isVisible = visibleItems[category.slug]?.has(i)
+                        const shouldFade = hasScrolled && !isVisible
+                        
+                        return (
+                          <div
+                            key={t.slug}
+                            data-category={category.slug}
+                            data-item-index={i}
+                            className="flex-shrink-0 w-[85vw] sm:w-[80vw] md:w-[45vw] lg:w-[30vw] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                            style={{
+                              scrollSnapAlign: isMobile ? 'center' : 'start',
+                              opacity: shouldFade ? 0.3 : 1,
+                              transform: shouldFade ? 'scale(0.95)' : 'scale(1)',
+                              willChange: 'opacity, transform'
+                            }}
+                          >
+                            <ToolCard tool={t} />
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
 

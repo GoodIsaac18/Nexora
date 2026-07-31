@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, Wand2 } from "lucide-react"
+import { Menu, X, ChevronDown, MessageSquare } from "lucide-react"
 import { categories, SITE } from "@/lib/tools"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { CommandPaletteTrigger } from "@/components/command-palette"
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const pathname = usePathname()
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export function SiteHeader() {
 
   useEffect(() => {
     setOpen(false)
+    setOpenDropdown(null)
   }, [pathname])
 
   return (
@@ -45,15 +47,41 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Categories">
-          {categories.map((c) => (
-            <Link
+          {categories.slice(0, 4).map((c) => (
+            <div
               key={c.slug}
-              href={`/#${c.slug}`}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="relative"
+              onMouseEnter={() => setOpenDropdown(c.slug)}
+              onMouseLeave={() => setOpenDropdown(null)}
             >
-              {c.name}
-            </Link>
+              <button className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                {c.name}
+                <ChevronDown className="size-3.5" />
+              </button>
+              {openDropdown === c.slug && (
+                <div className="absolute left-0 top-full mt-1 w-48 rounded-lg border border-border bg-card shadow-lg">
+                  <div className="p-2">
+                    {categories.filter(cat => cat.slug === c.slug).map(cat => (
+                      <Link
+                        key={cat.slug}
+                        href={`/#${cat.slug}`}
+                        className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           ))}
+          <Link
+            href="/ai-chat"
+            className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
+          >
+            <MessageSquare className="size-4" />
+            AI Chat
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -84,11 +112,20 @@ export function SiteHeader() {
               <Link
                 key={c.slug}
                 href={`/#${c.slug}`}
-                className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-4 py-3 text-sm font-medium text-muted-foreground transition-all duration-200 active:scale-95 hover:bg-muted hover:text-foreground"
               >
                 {c.name}
               </Link>
             ))}
+            <Link
+              href="/ai-chat"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-primary transition-all duration-200 active:scale-95 hover:bg-primary/10"
+            >
+              <MessageSquare className="size-4" />
+              AI Chat
+            </Link>
           </nav>
         </div>
       </div>

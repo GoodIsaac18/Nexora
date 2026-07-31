@@ -121,7 +121,7 @@ export function Particles() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 pointer-events-none opacity-50"
+      className="absolute inset-0 pointer-events-none opacity-30 dark:opacity-50"
       style={{ zIndex: 0 }}
     />
   )
