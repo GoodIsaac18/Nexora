@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { sanitizeInput } from "@/lib/security"
 import { tools } from "@/lib/tools"
 
-const GOOGLE_AI_API_KEY = process.env.GOOGLE_AI_API_KEY || "AQ.Ab8RN6IHU3P9xnTByGB-8YbuK-keoIQWK88hmy3ooPmB91PWeg"
+const GOOGLE_AI_API_KEY = process.env.GOOGLE_AI_API_KEY
 const GOOGLE_AI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
 
 // Simple in-memory cache for common queries

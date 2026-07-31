@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { tools } from "@/lib/tools"
 import { sanitizeInput } from "@/lib/security"
 
-const GOOGLE_AI_API_KEY = process.env.GOOGLE_AI_API_KEY || "AQ.Ab8RN6IHU3P9xnTByGB-8YbuK-keoIQWK88hmy3ooPmB91PWeg"
+const GOOGLE_AI_API_KEY = process.env.GOOGLE_AI_API_KEY
 const GOOGLE_AI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent"
 
 let lastRequestTime = 0
