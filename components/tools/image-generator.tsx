@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Image as ImageIcon, Sparkles, Download, AlertCircle, Loader2 } from "lucide-react"
-import { ActionButton, FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
 import { secureInput } from "@/lib/security"
 
 export function ImageGenerator() {
@@ -65,35 +64,35 @@ export function ImageGenerator() {
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 sm:px-0">
-      <Panel>
-        <FieldLabel htmlFor="prompt">Describe la imagen que quieres generar</FieldLabel>
+    <div className="flex flex-col gap-4">
+      <div>
+        <label htmlFor="prompt" className="block text-xs sm:text-sm font-medium mb-2">Describe la imagen que quieres generar</label>
         <textarea
           id="prompt"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Ej: Un gato astronauta flotando en el espacio con estrellas de fondo, estilo digital art..."
-          className={textAreaClass()}
+          className="rounded-xl border border-border bg-background px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none w-full"
           rows={4}
           maxLength={500}
         />
 
-        <div className="mt-4 flex flex-col sm:flex-row gap-2">
-          <ActionButton onClick={generateImage} disabled={!prompt.trim() || isGenerating || isCooldown} className="w-full sm:w-auto">
+        <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row gap-2">
+          <button onClick={generateImage} disabled={!prompt.trim() || isGenerating || isCooldown} className="inline-flex h-10 sm:h-11 items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground px-4 sm:px-6 text-xs sm:text-sm font-medium transition-colors hover:bg-primary/90 disabled:opacity-50 w-full sm:w-auto">
             {isGenerating ? (
               <>
-                <Loader2 className="size-4 animate-spin" /> Generando…
+                <Loader2 className="size-3 sm:size-4 animate-spin" /> Generando…
               </>
             ) : isCooldown ? (
               <>
-                <Loader2 className="size-4" /> Espera 5s…
+                <Loader2 className="size-3 sm:size-4" /> Espera 5s…
               </>
             ) : (
               <>
-                <Sparkles className="size-4" /> Generar imagen
+                <Sparkles className="size-3 sm:size-4" /> Generar imagen
               </>
             )}
-          </ActionButton>
+          </button>
           <button
             onClick={() => {
               setPrompt("")
@@ -101,35 +100,35 @@ export function ImageGenerator() {
               setError(null)
               setIsCooldown(false)
             }}
-            className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-xl border border-border bg-background px-6 text-sm font-medium transition-colors hover:bg-muted"
+            className="inline-flex h-10 sm:h-11 w-full sm:w-auto items-center justify-center rounded-xl border border-border bg-background px-4 sm:px-6 text-xs sm:text-sm font-medium transition-colors hover:bg-muted"
           >
             Limpiar
           </button>
         </div>
 
         {prompt.length > 0 && (
-          <p className="mt-2 text-xs text-muted-foreground">
+          <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-muted-foreground">
             {prompt.length}/500 caracteres
           </p>
         )}
-      </Panel>
+      </div>
 
       {error && (
-        <div className="flex items-start gap-2 rounded-xl border border-destructive/50 bg-destructive/10 p-4">
-          <AlertCircle className="size-5 text-destructive shrink-0 mt-0.5" />
-          <p className="text-sm text-destructive">{error}</p>
+        <div className="flex items-start gap-2 rounded-xl border border-destructive/50 bg-destructive/10 p-3 sm:p-4">
+          <AlertCircle className="size-3 sm:size-5 text-destructive shrink-0 mt-0.5" />
+          <p className="text-xs sm:text-sm text-destructive">{error}</p>
         </div>
       )}
 
       {generatedImage && (
-        <Panel>
-          <div className="flex items-center justify-between mb-4">
-            <FieldLabel htmlFor="generated-image">Imagen generada</FieldLabel>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <label htmlFor="generated-image" className="text-xs sm:text-sm font-medium">Imagen generada</label>
             <button
               onClick={downloadImage}
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted"
+              className="inline-flex items-center gap-2 rounded-lg px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors hover:bg-muted"
             >
-              <Download className="size-4" /> Descargar
+              <Download className="size-3 sm:size-4" /> Descargar
             </button>
           </div>
           <div className="relative rounded-xl overflow-hidden bg-muted">
@@ -140,10 +139,10 @@ export function ImageGenerator() {
               className="w-full h-auto"
             />
           </div>
-        </Panel>
+        </div>
       )}
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-[10px] sm:text-xs text-muted-foreground">
         La generación de imágenes se realiza usando Google AI (Gemini). Hay un límite de 5 segundos entre peticiones para no saturar la API.
       </p>
     </div>

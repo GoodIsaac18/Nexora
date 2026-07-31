@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { RefreshCw } from "lucide-react"
 import { CopyButton } from "@/components/copy-button"
-import { ActionButton, Panel } from "@/components/tools/ui"
+import { ActionButton } from "@/components/tools/ui"
 
 function uuid() {
   if (typeof crypto.randomUUID === "function") return crypto.randomUUID()
@@ -33,7 +33,7 @@ export function UuidGenerator() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex flex-wrap items-center gap-3">
           <label className="text-sm font-medium">
             Quantity
@@ -62,9 +62,9 @@ export function UuidGenerator() {
             <CopyButton value={allText} label="Copy all" className="h-10 px-4" />
           </div>
         </div>
-      </Panel>
+      </div>
 
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <ul className="flex flex-col gap-2">
           {list.map((v, i) => (
             <li
@@ -76,7 +76,7 @@ export function UuidGenerator() {
             </li>
           ))}
         </ul>
-      </Panel>
+      </div>
     </div>
   )
 }

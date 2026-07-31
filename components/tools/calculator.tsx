@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Calculator as CalculatorIcon, RotateCcw } from "lucide-react"
-import { Panel, ActionButton } from "@/components/tools/ui"
+import { ActionButton } from "@/components/tools/ui"
 
 export function Calculator() {
   const [display, setDisplay] = useState("0")
@@ -206,7 +206,7 @@ export function Calculator() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col gap-4">
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <CalculatorIcon className="size-5" />
@@ -264,7 +264,7 @@ export function Calculator() {
           <RotateCcw className="size-4" />
           Reiniciar
         </button>
-      </Panel>
+      </div>
 
       <p className="text-xs text-muted-foreground text-center">
         {scientificMode ? "Modo científico activado" : "Modo básico"}

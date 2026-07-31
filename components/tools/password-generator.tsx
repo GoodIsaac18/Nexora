@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { RefreshCw } from "lucide-react"
 import { CopyButton } from "@/components/copy-button"
-import { Panel } from "@/components/tools/ui"
 
 const SETS = {
   lower: "abcdefghijklmnopqrstuvwxyz",
@@ -51,7 +50,7 @@ export function PasswordGenerator() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <output className="scroll-thin flex-1 overflow-x-auto rounded-xl border border-border bg-background p-4 font-mono text-lg tracking-wide">
             {password || <span className="text-muted-foreground">Select at least one option</span>}
@@ -81,9 +80,9 @@ export function PasswordGenerator() {
             />
           </div>
         </div>
-      </Panel>
+      </div>
 
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <label htmlFor="len" className="text-sm font-medium">
             Length
@@ -123,7 +122,7 @@ export function PasswordGenerator() {
             </label>
           ))}
         </div>
-      </Panel>
+      </div>
     </div>
   )
 }

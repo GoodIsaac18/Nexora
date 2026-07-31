@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Copy, Globe, Check } from "lucide-react"
-import { ActionButton, FieldLabel, Panel, inputClass } from "@/components/tools/ui"
+import { FieldLabel, inputClass } from "@/components/tools/ui"
 import { CopyButton } from "@/components/copy-button"
 
 export function SlugGenerator() {
@@ -59,7 +59,7 @@ export function SlugGenerator() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4">
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <FieldLabel htmlFor="slug-input">Texto o título</FieldLabel>
         <input
           id="slug-input"
@@ -71,9 +71,9 @@ export function SlugGenerator() {
         <p className="mt-2 text-xs text-muted-foreground">
           Escribe cualquier texto y se generará automáticamente un slug amigable para URLs.
         </p>
-      </Panel>
+      </div>
 
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="mb-4 grid grid-cols-2 gap-4">
           <div>
             <FieldLabel htmlFor="separator">Separador</FieldLabel>
@@ -132,7 +132,7 @@ export function SlugGenerator() {
             </p>
           </div>
         )}
-      </Panel>
+      </div>
     </div>
   )
 }

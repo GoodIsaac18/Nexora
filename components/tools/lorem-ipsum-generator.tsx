@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { RefreshCw } from "lucide-react"
 import { CopyButton } from "@/components/copy-button"
-import { ActionButton, Panel } from "@/components/tools/ui"
+import { ActionButton } from "@/components/tools/ui"
 
 const WORDS =
   "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo consequat duis aute irure in reprehenderit voluptate velit esse cillum eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt culpa qui officia deserunt mollit anim id est laborum".split(
@@ -43,7 +43,7 @@ export function LoremIpsumGenerator() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex flex-wrap items-center gap-3">
           <label className="text-sm font-medium">
             Amount
@@ -77,10 +77,10 @@ export function LoremIpsumGenerator() {
             <CopyButton value={text} className="h-10 px-4" />
           </div>
         </div>
-      </Panel>
-      <Panel>
+      </div>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <p className="scroll-thin min-h-[280px] whitespace-pre-wrap leading-relaxed">{text}</p>
-      </Panel>
+      </div>
     </div>
   )
 }

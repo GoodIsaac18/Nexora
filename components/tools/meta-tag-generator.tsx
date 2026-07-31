@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { CopyButton } from "@/components/copy-button"
-import { FieldLabel, inputClass, Panel } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 export function MetaTagGenerator() {
   const [title, setTitle] = useState("My awesome page")
@@ -31,42 +31,43 @@ export function MetaTagGenerator() {
   }, [title, description, url, image])
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <Panel className="flex flex-col gap-4">
-        <div>
-          <FieldLabel htmlFor="mt-title">Page title</FieldLabel>
-          <input id="mt-title" value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass()} />
+    <div className="flex flex-col gap-4">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <FieldLabel htmlFor="mt-title">Page title</FieldLabel>
+            <input id="mt-title" value={title} onChange={(e) => setTitle(e.target.value)} className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          </div>
+          <div>
+            <FieldLabel htmlFor="mt-url">Canonical URL</FieldLabel>
+            <input id="mt-url" value={url} onChange={(e) => setUrl(e.target.value)} className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          </div>
+          <div>
+            <FieldLabel htmlFor="mt-desc">Description</FieldLabel>
+            <textarea
+              id="mt-desc"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">{description.length}/160 characters</p>
+          </div>
+          <div>
+            <FieldLabel htmlFor="mt-img">Image URL (Open Graph)</FieldLabel>
+            <input id="mt-img" value={image} onChange={(e) => setImage(e.target.value)} className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          </div>
         </div>
-        <div>
-          <FieldLabel htmlFor="mt-desc">Description</FieldLabel>
-          <textarea
-            id="mt-desc"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            className={inputClass("h-auto py-2")}
-          />
-          <p className="mt-1 text-xs text-muted-foreground">{description.length}/160 characters</p>
-        </div>
-        <div>
-          <FieldLabel htmlFor="mt-url">Canonical URL</FieldLabel>
-          <input id="mt-url" value={url} onChange={(e) => setUrl(e.target.value)} className={inputClass()} />
-        </div>
-        <div>
-          <FieldLabel htmlFor="mt-img">Image URL (Open Graph)</FieldLabel>
-          <input id="mt-img" value={image} onChange={(e) => setImage(e.target.value)} className={inputClass()} />
-        </div>
-      </Panel>
-
-      <Panel>
+      </div>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="mb-2 flex items-center justify-between">
-          <FieldLabel>Generated tags</FieldLabel>
+          <span className="text-sm font-medium">Generated tags</span>
           <CopyButton value={output} />
         </div>
         <pre className="scroll-thin min-h-[300px] overflow-auto rounded-xl border border-border bg-background p-3 font-mono text-xs leading-relaxed">
           {output}
         </pre>
-      </Panel>
+      </div>
     </div>
   )
 }

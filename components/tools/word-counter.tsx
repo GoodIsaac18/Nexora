@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 export function WordCounter() {
   const [text, setText] = useState("")
@@ -36,16 +36,16 @@ export function WordCounter() {
           </div>
         ))}
       </div>
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <FieldLabel htmlFor="wc-input">Your text</FieldLabel>
         <textarea
           id="wc-input"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Start typing or paste your text…"
-          className={textAreaClass("min-h-[280px] font-sans")}
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[280px] font-sans"
         />
-      </Panel>
+      </div>
     </div>
   )
 }

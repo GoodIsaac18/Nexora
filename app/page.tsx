@@ -3,6 +3,7 @@ import { ArrowRight, ShieldCheck, Sparkles, Zap, TrendingUp, Users, Clock } from
 import { AdSlot } from "@/components/ad-slot"
 import { availableTools, tools, SITE } from "@/lib/tools"
 import { ToolBrowser } from "@/components/tool-browser"
+import { RecentTools } from "@/components/recent-tools"
 
 export default function HomePage() {
   const availableCount = availableTools().length
@@ -61,6 +62,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Recent Tools */}
+      <RecentTools />
 
       {/* Stats Section - only on large screens */}
       <section className="hidden border-b border-border bg-muted/30 lg:block">

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { CopyButton } from "@/components/copy-button"
-import { FieldLabel, Panel, inputClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 function buildUtmUrl(
   base: string,
@@ -42,67 +42,65 @@ export function UtmLinkBuilder() {
   )
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <Panel className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <FieldLabel htmlFor="utm-base">Base URL</FieldLabel>
+        <input id="utm-base" value={base} onChange={(e) => setBase(e.target.value)} className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+      </div>
+      <div>
+        <FieldLabel htmlFor="utm-source">utm_source</FieldLabel>
+        <input
+          id="utm-source"
+          value={source}
+          onChange={(e) => setSource(e.target.value)}
+          placeholder="newsletter, google, facebook"
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+      <div>
+        <FieldLabel htmlFor="utm-medium">utm_medium</FieldLabel>
+        <input
+          id="utm-medium"
+          value={medium}
+          onChange={(e) => setMedium(e.target.value)}
+          placeholder="email, cpc, social"
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+      <div>
+        <FieldLabel htmlFor="utm-campaign">utm_campaign</FieldLabel>
+        <input
+          id="utm-campaign"
+          value={campaign}
+          onChange={(e) => setCampaign(e.target.value)}
+          placeholder="spring_sale"
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div>
-          <FieldLabel htmlFor="utm-base">URL destino</FieldLabel>
-          <input id="utm-base" value={base} onChange={(e) => setBase(e.target.value)} className={inputClass()} />
+          <FieldLabel htmlFor="utm-term">utm_term (opcional)</FieldLabel>
+          <input id="utm-term" value={term} onChange={(e) => setTerm(e.target.value)} className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
         </div>
         <div>
-          <FieldLabel htmlFor="utm-source">utm_source</FieldLabel>
+          <FieldLabel htmlFor="utm-content">utm_content (opcional)</FieldLabel>
           <input
-            id="utm-source"
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-            placeholder="newsletter, google, facebook"
-            className={inputClass()}
+            id="utm-content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-        <div>
-          <FieldLabel htmlFor="utm-medium">utm_medium</FieldLabel>
-          <input
-            id="utm-medium"
-            value={medium}
-            onChange={(e) => setMedium(e.target.value)}
-            placeholder="email, cpc, social"
-            className={inputClass()}
-          />
-        </div>
-        <div>
-          <FieldLabel htmlFor="utm-campaign">utm_campaign</FieldLabel>
-          <input
-            id="utm-campaign"
-            value={campaign}
-            onChange={(e) => setCampaign(e.target.value)}
-            placeholder="spring_sale"
-            className={inputClass()}
-          />
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <FieldLabel htmlFor="utm-term">utm_term (opcional)</FieldLabel>
-            <input id="utm-term" value={term} onChange={(e) => setTerm(e.target.value)} className={inputClass()} />
-          </div>
-          <div>
-            <FieldLabel htmlFor="utm-content">utm_content (opcional)</FieldLabel>
-            <input
-              id="utm-content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className={inputClass()}
-            />
-          </div>
-        </div>
-      </Panel>
-      <Panel>
+      </div>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="mb-2 flex items-center justify-between">
-          <FieldLabel>Enlace con UTM</FieldLabel>
+          <span className="text-sm font-medium">Enlace con UTM</span>
           <CopyButton value={out.startsWith("http") ? out : ""} />
         </div>
         <pre className="min-h-[200px] whitespace-pre-wrap break-all rounded-xl border border-border bg-background p-3 font-mono text-sm">
           {out || "—"}
         </pre>
-      </Panel>
+      </div>
     </div>
   )
 }

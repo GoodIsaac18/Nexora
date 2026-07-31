@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Languages, Copy, Check, ArrowRightLeft } from "lucide-react"
-import { ActionButton, FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { ActionButton, FieldLabel } from "@/components/tools/ui"
 
 const languages = [
   { code: "en", name: "English" },
@@ -70,7 +70,7 @@ export function Translator() {
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex items-center gap-2 mb-4">
           <Languages className="size-5" />
           <h3 className="text-lg font-semibold">Traductor</h3>
@@ -127,7 +127,7 @@ export function Translator() {
               value={sourceText}
               onChange={(e) => setSourceText(e.target.value)}
               placeholder="Escribe o pega el texto a traducir..."
-              className={textAreaClass()}
+              className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               rows={6}
             />
           </div>
@@ -157,7 +157,7 @@ export function Translator() {
               value={translatedText}
               readOnly
               placeholder="La traducción aparecerá aquí..."
-              className={textAreaClass()}
+              className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               rows={6}
             />
           </div>
@@ -185,7 +185,7 @@ export function Translator() {
             Limpiar
           </button>
         </div>
-      </Panel>
+      </div>
 
       <p className="text-xs text-muted-foreground">
         Traducción proporcionada por MyMemory Translation API. Para textos largos o traducciones profesionales, considera usar servicios especializados.

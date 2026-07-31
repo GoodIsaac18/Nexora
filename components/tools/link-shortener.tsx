@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { CopyButton } from "@/components/copy-button"
-import { ActionButton, FieldLabel, Panel, inputClass } from "@/components/tools/ui"
+import { ActionButton, FieldLabel } from "@/components/tools/ui"
 
 type ShortenResult = { shorturl: string; url: string } | { error: string }
 
@@ -43,16 +43,16 @@ export function LinkShortener() {
   }
 
   return (
-    <div className="mx-auto flex max-w-xl flex-col gap-4">
-      <Panel>
-        <FieldLabel htmlFor="long-url">URL larga</FieldLabel>
+    <div className="flex flex-col gap-4">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <FieldLabel htmlFor="ls-url">URL to shorten</FieldLabel>
         <input
           id="long-url"
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://example.com/pagina-muy-larga"
-          className={inputClass()}
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
         />
         <p className="mt-2 text-xs text-muted-foreground">
           El acortado se hace en el servidor con is.gd. No guardamos historial en esta app.
@@ -62,15 +62,14 @@ export function LinkShortener() {
             {loading ? "Acortando…" : "Acortar enlace"}
           </ActionButton>
         </div>
-      </Panel>
-
+      </div>
       {result && "error" in result && (
         <p className="text-sm text-destructive">{result.error}</p>
       )}
 
       {result && "shorturl" in result && (
-        <Panel>
-          <FieldLabel>Enlace corto</FieldLabel>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <span className="text-sm font-medium">Enlace corto</span>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <a
               href={result.shorturl}
@@ -82,7 +81,7 @@ export function LinkShortener() {
             </a>
             <CopyButton value={result.shorturl} label="Copiar" />
           </div>
-        </Panel>
+        </div>
       )}
     </div>
   )

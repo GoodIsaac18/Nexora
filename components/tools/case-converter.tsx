@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { CopyButton } from "@/components/copy-button"
-import { FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 function words(s: string) {
   return s
@@ -36,16 +36,16 @@ export function CaseConverter() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <FieldLabel htmlFor="cc-input">Input text</FieldLabel>
         <textarea
           id="cc-input"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type something…"
-          className={textAreaClass("min-h-[120px] font-sans")}
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[120px] font-sans"
         />
-      </Panel>
+      </div>
       <div className="grid gap-3 sm:grid-cols-2">
         {Object.entries(transforms).map(([label, fn]) => {
           const value = text ? fn(text) : ""

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { CopyButton } from "@/components/copy-button"
-import { FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 function decodePart(part: string): string {
   try {
@@ -31,20 +31,20 @@ export function JwtDecoder() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Panel>
-        <FieldLabel htmlFor="jwt">Paste JWT</FieldLabel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <FieldLabel htmlFor="jwt-input">JWT token</FieldLabel>
         <textarea
           id="jwt"
           value={token}
           onChange={(e) => setToken(e.target.value)}
           placeholder="eyJhbGciOiJIUzI1NiIs…"
           spellCheck={false}
-          className={textAreaClass("min-h-[100px] font-mono text-xs")}
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[100px] font-mono"
         />
         <p className="mt-2 text-xs text-muted-foreground">
           Decoding happens locally. Signatures are not verified.
         </p>
-      </Panel>
+      </div>
 
       {parts && "error" in parts && (
         <p className="text-sm text-destructive">{parts.error}</p>
@@ -52,28 +52,28 @@ export function JwtDecoder() {
 
       {parts && !("error" in parts) && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <Panel>
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
             <div className="mb-2 flex items-center justify-between">
-              <FieldLabel>Header</FieldLabel>
+              <span className="text-sm font-medium">Header</span>
               <CopyButton value={parts.header} />
             </div>
             <pre className="scroll-thin max-h-[280px] overflow-auto rounded-xl border border-border bg-background p-3 font-mono text-xs">
               {parts.header}
             </pre>
-          </Panel>
-          <Panel>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
             <div className="mb-2 flex items-center justify-between">
-              <FieldLabel>Payload</FieldLabel>
+              <span className="text-sm font-medium">Payload</span>
               <CopyButton value={parts.payload} />
             </div>
             <pre className="scroll-thin max-h-[280px] overflow-auto rounded-xl border border-border bg-background p-3 font-mono text-xs">
               {parts.payload}
             </pre>
-          </Panel>
-          <Panel className="lg:col-span-2">
-            <FieldLabel>Signature (base64url)</FieldLabel>
+          </div>
+          <div className="lg:col-span-2 rounded-xl border border-border bg-card p-4 sm:p-6">
+            <span className="text-sm font-medium">Signature (base64url)</span>
             <p className="mt-1 break-all font-mono text-xs text-muted-foreground">{parts.signature}</p>
-          </Panel>
+          </div>
         </div>
       )}
     </div>

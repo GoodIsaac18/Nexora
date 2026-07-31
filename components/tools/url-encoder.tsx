@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { CopyButton } from "@/components/copy-button"
-import { FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 export function UrlEncoder() {
   const [mode, setMode] = useState<"encode" | "decode">("encode")
@@ -35,7 +35,7 @@ export function UrlEncoder() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Panel>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <FieldLabel htmlFor="url-in">Input</FieldLabel>
           <textarea
             id="url-in"
@@ -43,18 +43,18 @@ export function UrlEncoder() {
             onChange={(e) => setInput(e.target.value)}
             placeholder={mode === "encode" ? "https://example.com/?q=hello world" : "https%3A%2F%2Fexample.com"}
             spellCheck={false}
-            className={textAreaClass("min-h-[200px]")}
+            className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[200px]"
           />
-        </Panel>
-        <Panel>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <div className="mb-2 flex items-center justify-between">
-            <FieldLabel>Output</FieldLabel>
+            <span className="text-sm font-medium">Output</span>
             <CopyButton value={output} />
           </div>
           <pre className="scroll-thin min-h-[200px] overflow-auto whitespace-pre-wrap break-all rounded-xl border border-border bg-background p-3 font-mono text-sm leading-relaxed">
             {output || <span className="text-muted-foreground">Output appears here…</span>}
           </pre>
-        </Panel>
+        </div>
       </div>
     </div>
   )

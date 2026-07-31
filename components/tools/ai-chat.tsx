@@ -1,20 +1,27 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Send, User, Bot, Sparkles, AlertCircle, Trash2 } from "lucide-react"
-import { ActionButton, FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { Send, User, Bot, Sparkles, AlertCircle, Trash2, ThumbsUp, ThumbsDown, ExternalLink } from "lucide-react"
 import { secureInput } from "@/lib/security"
+import { useRouter } from "next/navigation"
 
 interface Message {
   role: "user" | "assistant"
   content: string
+  toolId?: string
+  toolUrl?: string
+  confidence?: number
+  suggestions?: Array<{ id: string; name: string; description: string }>
+  fromCache?: boolean
+  rating?: "up" | "down"
 }
 
 export function AiChat() {
+  const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "¡Hola! Soy tu asistente de IA. Puedo ayudarte con cualquier pregunta o tarea. ¿En qué puedo ayudarte hoy?"
+      content: "¡Hola! Soy tu asistente de IA. Puedo ayudarte a encontrar la herramienta perfecta para tus necesidades. ¿Qué necesitas hacer hoy?"
     }
   ])
   const [input, setInput] = useState("")
@@ -68,7 +75,15 @@ export function AiChat() {
       }
 
       const data = await response.json()
-      setMessages(prev => [...prev, { role: "assistant", content: data.response }])
+      setMessages(prev => [...prev, { 
+        role: "assistant", 
+        content: data.response,
+        toolId: data.toolId,
+        toolUrl: data.toolUrl,
+        confidence: data.confidence,
+        suggestions: data.suggestions,
+        fromCache: data.fromCache
+      }])
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al procesar el mensaje. Intenta de nuevo.")
     } finally {
@@ -88,118 +103,185 @@ export function AiChat() {
     setMessages([
       {
         role: "assistant",
-        content: "¡Hola! Soy tu asistente de IA. Puedo ayudarte con cualquier pregunta o tarea. ¿En qué puedo ayudarte hoy?"
+        content: "¡Hola! Soy tu asistente de IA. Puedo ayudarte a encontrar la herramienta perfecta para tus necesidades. ¿Qué necesitas hacer hoy?"
       }
     ])
     setError(null)
     setIsCooldown(false)
   }
 
+  const handleRating = (index: number, rating: "up" | "down") => {
+    setMessages(prev => {
+      const updated = [...prev]
+      updated[index] = { ...updated[index], rating }
+      return updated
+    })
+  }
+
+  const navigateToTool = (toolUrl: string) => {
+    router.push(toolUrl)
+  }
+
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 px-4 sm:px-0">
-      <Panel className="flex flex-col h-[600px] sm:h-[700px]">
-        <div className="flex items-center justify-between border-b border-border p-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-              <Bot className="size-5 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm sm:text-base">Asistente de IA</h3>
-              <p className="text-xs text-muted-foreground">Powered by Google AI</p>
+    <div className="flex flex-col h-[70vh] sm:h-[600px]">
+      <div className="flex items-center justify-between border-b border-border p-3 sm:p-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="flex size-8 sm:size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Sparkles className="size-4 sm:size-5" />
+          </span>
+          <div>
+            <h3 className="text-sm font-semibold sm:text-base">Asistente IA</h3>
+            <p className="text-xs text-muted-foreground">Encuentra la herramienta perfecta</p>
+          </div>
+        </div>
+        <button
+          onClick={clearChat}
+          className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          title="Limpiar chat"
+        >
+          <Trash2 className="size-4 sm:size-5" />
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4">
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
+          >
+            <span className={`flex size-8 sm:size-10 shrink-0 items-center justify-center rounded-full ${
+              msg.role === "user" 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-muted text-muted-foreground"
+            }`}>
+              {msg.role === "user" ? <User className="size-4 sm:size-5" /> : <Bot className="size-4 sm:size-5" />}
+            </span>
+            <div className={`flex-1 space-y-2 ${msg.role === "user" ? "text-right" : ""}`}>
+              <div className={`inline-block rounded-2xl px-4 py-2 max-w-[80%] ${
+                msg.role === "user"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted"
+              }`}>
+                <p className="text-sm sm:text-base">{msg.content}</p>
+                {msg.fromCache && (
+                  <p className="text-xs opacity-70 mt-1">⚡ Respuesta en caché</p>
+                )}
+              </div>
+              
+              {/* Tool suggestion with direct link */}
+              {msg.toolUrl && (
+                <div className="mt-2">
+                  <button
+                    onClick={() => navigateToTool(msg.toolUrl!)}
+                    className="inline-flex items-center gap-2 rounded-xl border-2 border-primary/20 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-all hover:border-primary/40 hover:bg-primary/10"
+                  >
+                    <ExternalLink className="size-4" />
+                    Ir a herramienta
+                  </button>
+                </div>
+              )}
+
+              {/* Fallback suggestions */}
+              {msg.suggestions && msg.suggestions.length > 0 && (
+                <div className="mt-2 space-y-2">
+                  <p className="text-xs text-muted-foreground">Opciones sugeridas:</p>
+                  {msg.suggestions.map((suggestion, i) => (
+                    <button
+                      key={i}
+                      onClick={() => navigateToTool(`/${suggestion.id}`)}
+                      className="block w-full text-left rounded-lg border border-border bg-card px-3 py-2 text-sm transition-all hover:border-primary/30 hover:bg-muted/50"
+                    >
+                      <span className="font-medium">{suggestion.name}</span>
+                      <p className="text-xs text-muted-foreground">{suggestion.description}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Rating buttons for assistant messages */}
+              {msg.role === "assistant" && index > 0 && !msg.rating && (
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => handleRating(index, "up")}
+                    className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-green-500/10 hover:text-green-600"
+                    title="Útil"
+                  >
+                    <ThumbsUp className="size-4" />
+                  </button>
+                  <button
+                    onClick={() => handleRating(index, "down")}
+                    className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-red-500/10 hover:text-red-600"
+                    title="No útil"
+                  >
+                    <ThumbsDown className="size-4" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
+        ))}
+        
+        {isLoading && (
+          <div className="flex gap-3">
+            <span className="flex size-8 sm:size-10 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <Bot className="size-4 sm:size-5 animate-pulse" />
+            </span>
+            <div className="flex-1">
+              <div className="inline-block rounded-2xl bg-muted px-4 py-2">
+                <p className="text-sm sm:text-base">Pensando...</p>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        <div ref={messagesEndRef} />
+      </div>
+
+      {error && (
+        <div className="mx-3 mb-2 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 sm:mx-4">
+          <AlertCircle className="size-4 text-destructive shrink-0 mt-0.5" />
+          <p className="text-sm text-destructive">{error}</p>
+        </div>
+      )}
+
+      {/* Suggestion chips */}
+      <div className="px-3 pb-2 sm:px-4">
+        <div className="flex flex-wrap gap-2">
+          {["Generar contraseña", "Convertir PDF", "Comprimir imagen", "Formatear JSON"].map((suggestion) => (
+            <button
+              key={suggestion}
+              onClick={() => setInput(suggestion)}
+              className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-all hover:border-primary/30 hover:bg-muted/50 sm:text-sm"
+            >
+              {suggestion}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="border-t border-border p-3 sm:p-4">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Escribe lo que necesitas hacer..."
+            disabled={isLoading || isCooldown}
+            className="flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 sm:text-base"
+          />
           <button
-            onClick={clearChat}
-            className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted"
-            title="Limpiar chat"
+            onClick={handleSend}
+            disabled={!input.trim() || isLoading || isCooldown}
+            className="rounded-xl bg-primary px-4 py-3 text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:hover:bg-primary"
           >
-            <Trash2 className="size-4" />
+            <Send className="size-4 sm:size-5" />
           </button>
         </div>
-
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex gap-3 ${
-                message.role === "user" ? "flex-row-reverse" : ""
-              }`}
-            >
-              {message.role === "assistant" && (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                  <Bot className="size-4 text-primary" />
-                </div>
-              )}
-              {message.role === "user" && (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <User className="size-4" />
-                </div>
-              )}
-              <div
-                className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
-                  message.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
-                }`}
-              >
-                <p className="whitespace-pre-wrap break-words">{message.content}</p>
-              </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="flex gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <Sparkles className="size-4 text-primary animate-pulse" />
-              </div>
-              <div className="rounded-2xl bg-muted px-4 py-3 text-sm">
-                <p className="animate-pulse">Pensando...</p>
-              </div>
-            </div>
-          )}
-          {error && (
-            <div className="flex items-start gap-2 rounded-xl border border-destructive/50 bg-destructive/10 p-3">
-              <AlertCircle className="size-4 text-destructive shrink-0 mt-0.5" />
-              <p className="text-sm text-destructive">{error}</p>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        <div className="border-t border-border p-4">
-          <div className="flex gap-2">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Escribe tu mensaje..."
-              disabled={isLoading || isCooldown}
-              className="flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 resize-none"
-              rows={2}
-              maxLength={2000}
-            />
-            <button
-              onClick={handleSend}
-              disabled={!input.trim() || isLoading || isCooldown}
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary/90 disabled:opacity-50 self-end"
-            >
-              {isLoading ? (
-                <Sparkles className="size-5 animate-pulse" />
-              ) : (
-                <Send className="size-5" />
-              )}
-            </button>
-          </div>
-          {input.length > 0 && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              {input.length}/2000 caracteres
-            </p>
-          )}
-        </div>
-      </Panel>
-
-      <p className="text-xs text-muted-foreground px-4 sm:px-0">
-        El chat usa Google AI (Gemini 3.5 Flash Lite). Hay un límite de 2 segundos entre peticiones para no saturar la API.
-      </p>
+        {isCooldown && (
+          <p className="mt-2 text-xs text-muted-foreground">Espera un momento antes de enviar otro mensaje...</p>
+        )}
+      </div>
     </div>
   )
 }

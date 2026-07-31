@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { FieldLabel, Panel, inputClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 type UnitGroup = {
   id: string
@@ -94,7 +94,7 @@ export function UnitConverter() {
         ))}
       </div>
 
-      <Panel className="grid gap-4 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6 grid gap-4 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
         <div>
           <FieldLabel htmlFor="amount">Amount</FieldLabel>
           <input
@@ -102,12 +102,12 @@ export function UnitConverter() {
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className={inputClass()}
+            className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <select
             value={fromUnit}
             onChange={(e) => setFromUnit(e.target.value)}
-            className={`${inputClass("mt-2")} cursor-pointer`}
+            className="mt-2 rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
           >
             {unitKeys.map((u) => (
               <option key={u} value={u}>
@@ -118,14 +118,14 @@ export function UnitConverter() {
         </div>
         <p className="hidden pb-3 text-center text-muted-foreground sm:block">→</p>
         <div>
-          <FieldLabel>Result</FieldLabel>
+          <span className="text-sm font-medium">Result</span>
           <output className="flex h-10 items-center rounded-xl border border-border bg-muted/40 px-3 font-mono text-sm">
             {result || "—"}
           </output>
           <select
             value={toUnit}
             onChange={(e) => setToUnit(e.target.value)}
-            className={`${inputClass("mt-2")} cursor-pointer`}
+            className="mt-2 rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
           >
             {unitKeys.map((u) => (
               <option key={u} value={u}>
@@ -134,7 +134,7 @@ export function UnitConverter() {
             ))}
           </select>
         </div>
-      </Panel>
+      </div>
     </div>
   )
 }

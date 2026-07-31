@@ -1,9 +1,13 @@
+"use client"
+
 import Link from "next/link"
 import type { ReactNode } from "react"
-import { ChevronRight, House, Sparkles } from "lucide-react"
+import { useEffect } from "react"
+import { ChevronRight, House, Sparkles, MessageSquare, HelpCircle, Share2 } from "lucide-react"
 import { AdSlot } from "@/components/ad-slot"
 import { getTool, getCategory, relatedTools } from "@/lib/tools"
 import { ToolCard } from "@/components/tool-card"
+import { useRecentTools } from "@/hooks/use-recent-tools"
 
 export function ToolShell({ slug, children }: { slug: string; children: ReactNode }) {
   const tool = getTool(slug)
@@ -11,6 +15,12 @@ export function ToolShell({ slug, children }: { slug: string; children: ReactNod
   const category = getCategory(tool.category)
   const related = relatedTools(slug)
   const Icon = tool.icon
+  const { addRecentTool } = useRecentTools()
+
+  // Track tool visit
+  useEffect(() => {
+    addRecentTool(slug)
+  }, [slug, addRecentTool])
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:max-w-7xl lg:py-16 xl:py-20">
@@ -65,11 +75,115 @@ export function ToolShell({ slug, children }: { slug: string; children: ReactNod
             </div>
           </div>
 
+          {/* AI Chat Banner */}
+          <div className="mt-8 animate-fade-in-up [animation-delay:160ms] lg:mt-12">
+            <Link
+              href="/ai-chat"
+              className="group flex items-center gap-4 rounded-2xl border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 p-6 transition-all hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 lg:rounded-3xl lg:p-8"
+            >
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg transition-all group-hover:scale-110 lg:size-16 lg:rounded-2xl">
+                <MessageSquare className="size-6 lg:size-8" />
+              </span>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-primary lg:text-xl">¿Buscas otra cosa?</h3>
+                <p className="mt-1 text-sm text-muted-foreground lg:text-base">Pídeselo a nuestra IA y te guiará a la herramienta perfecta</p>
+              </div>
+              <ChevronRight className="size-6 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-primary lg:size-8" />
+            </Link>
+          </div>
+
+          {/* Guide Section */}
+          <section className="mt-8 animate-fade-in-up [animation-delay:200ms] lg:mt-12" aria-labelledby="guide-heading">
+            <h2 id="guide-heading" className="mb-4 flex items-center gap-2 text-lg font-semibold tracking-tight lg:mb-6 lg:text-2xl lg:font-bold">
+              <HelpCircle className="size-5 text-primary lg:size-6" />
+              Cómo usar {tool.name}
+            </h2>
+            <div className="rounded-2xl border border-border bg-card/50 p-6 lg:rounded-3xl lg:p-8">
+              <div className="prose prose-slate max-w-none dark:prose-invert lg:prose-lg">
+                <p>{tool.guide || `Esta herramienta te permite ${tool.longDescription.toLowerCase()}. Sigue estos pasos para obtener los mejores resultados:`}</p>
+                <ol>
+                  <li>Introduce los datos necesarios en los campos proporcionados</li>
+                  <li>Revisa la configuración y ajusta los parámetros según tus necesidades</li>
+                  <li>Haz clic en el botón de acción para procesar tus datos</li>
+                  <li>Copia o descarga el resultado según lo requieras</li>
+                </ol>
+                <p>Todos los procesos se realizan localmente en tu navegador, garantizando la privacidad de tus datos.</p>
+              </div>
+            </div>
+          </section>
+
+          {/* FAQ Section */}
+          <section className="mt-8 animate-fade-in-up [animation-delay:240ms] lg:mt-12" aria-labelledby="faq-heading">
+            <h2 id="faq-heading" className="mb-4 flex items-center gap-2 text-lg font-semibold tracking-tight lg:mb-6 lg:text-2xl lg:font-bold">
+              <HelpCircle className="size-5 text-primary lg:size-6" />
+              Preguntas Frecuentes
+            </h2>
+            <div className="space-y-4">
+              {tool.faq ? (
+                tool.faq.map((faq, i) => (
+                  <details key={i} className="group rounded-2xl border border-border bg-card/50 lg:rounded-3xl">
+                    <summary className="flex cursor-pointer items-center justify-between p-4 font-medium transition-all hover:bg-muted/50 lg:p-6 lg:text-lg">
+                      {faq.question}
+                      <ChevronRight className="size-4 transition-transform group-open:rotate-90 lg:size-5" />
+                    </summary>
+                    <div className="px-4 pb-4 text-sm text-muted-foreground lg:px-6 lg:pb-6 lg:text-base">
+                      {faq.answer}
+                    </div>
+                  </details>
+                ))
+              ) : (
+                <>
+                  <details className="group rounded-2xl border border-border bg-card/50 lg:rounded-3xl">
+                    <summary className="flex cursor-pointer items-center justify-between p-4 font-medium transition-all hover:bg-muted/50 lg:p-6 lg:text-lg">
+                      ¿Es gratis usar esta herramienta?
+                      <ChevronRight className="size-4 transition-transform group-open:rotate-90 lg:size-5" />
+                    </summary>
+                    <div className="px-4 pb-4 text-sm text-muted-foreground lg:px-6 lg:pb-6 lg:text-base">
+                      Sí, todas nuestras herramientas son completamente gratuitas y no requieren registro.
+                    </div>
+                  </details>
+                  <details className="group rounded-2xl border border-border bg-card/50 lg:rounded-3xl">
+                    <summary className="flex cursor-pointer items-center justify-between p-4 font-medium transition-all hover:bg-muted/50 lg:p-6 lg:text-lg">
+                      ¿Mis datos están seguros?
+                      <ChevronRight className="size-4 transition-transform group-open:rotate-90 lg:size-5" />
+                    </summary>
+                    <div className="px-4 pb-4 text-sm text-muted-foreground lg:px-6 lg:pb-6 lg:text-base">
+                      Absolutamente. Todos los procesos se realizan localmente en tu navegador. No enviamos tus datos a ningún servidor.
+                    </div>
+                  </details>
+                  <details className="group rounded-2xl border border-border bg-card/50 lg:rounded-3xl">
+                    <summary className="flex cursor-pointer items-center justify-between p-4 font-medium transition-all hover:bg-muted/50 lg:p-6 lg:text-lg">
+                      ¿Funciona en dispositivos móviles?
+                      <ChevronRight className="size-4 transition-transform group-open:rotate-90 lg:size-5" />
+                    </summary>
+                    <div className="px-4 pb-4 text-sm text-muted-foreground lg:px-6 lg:pb-6 lg:text-base">
+                      Sí, nuestra herramienta está optimizada para funcionar perfectamente en cualquier dispositivo, incluyendo smartphones y tablets.
+                    </div>
+                  </details>
+                </>
+              )}
+            </div>
+          </section>
+
+          {/* Share Button */}
+          <div className="mt-8 animate-fade-in-up [animation-delay:280ms] lg:mt-12">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href)
+                alert('¡Enlace copiado al portapapeles!')
+              }}
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-border bg-card px-4 py-2 text-sm font-medium transition-all hover:border-primary/30 hover:bg-muted/50 lg:rounded-2xl lg:px-6 lg:py-3 lg:text-base"
+            >
+              <Share2 className="size-4 lg:size-5" />
+              Compartir herramienta
+            </button>
+          </div>
+
           {/* Related Tools */}
           {related.length > 0 && (
-            <section className="mt-12 animate-fade-in-up lg:mt-16" aria-labelledby="related-heading">
+            <section className="mt-12 animate-fade-in-up [animation-delay:320ms] lg:mt-16" aria-labelledby="related-heading">
               <h2 id="related-heading" className="mb-4 text-lg font-semibold tracking-tight lg:mb-6 lg:text-2xl lg:font-bold">
-                Related tools
+                Herramientas relacionadas
               </h2>
               <div className="grid gap-4 sm:grid-cols-2 lg:gap-6 lg:grid-cols-3">
                 {related.map((t, i) => (

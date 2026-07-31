@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { AlertCircle, CheckCircle2 } from "lucide-react"
 import { CopyButton } from "@/components/copy-button"
-import { ActionButton, FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { ActionButton, FieldLabel } from "@/components/tools/ui"
 
 const SAMPLE = `{"name":"Toolbox","tools":["json","uuid"],"active":true,"count":300}`
 
@@ -28,9 +28,9 @@ export function JsonFormatter() {
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <Panel>
-        <div className="mb-2 flex items-center justify-between">
+    <div className="flex flex-col gap-4">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <div className="mb-4 flex items-center justify-between">
           <FieldLabel htmlFor="json-input">Input JSON</FieldLabel>
           <div className="flex gap-2">
             <ActionButton variant="outline" onClick={() => setInput(SAMPLE)}>
@@ -47,7 +47,7 @@ export function JsonFormatter() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Paste your JSON here…"
           spellCheck={false}
-          className={textAreaClass("min-h-[320px]")}
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[200px] font-mono"
         />
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <label className="text-sm text-muted-foreground">
@@ -66,11 +66,10 @@ export function JsonFormatter() {
             Minify
           </ActionButton>
         </div>
-      </Panel>
-
-      <Panel>
+      </div>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="mb-2 flex items-center justify-between">
-          <FieldLabel>Formatted output</FieldLabel>
+          <span className="text-sm font-medium">Formatted output</span>
           <CopyButton value={result.output} />
         </div>
         {result.ok ? (
@@ -92,7 +91,7 @@ export function JsonFormatter() {
             <p className="mt-2 font-mono text-sm text-destructive/90">{result.error}</p>
           </div>
         )}
-      </Panel>
+      </div>
     </div>
   )
 }

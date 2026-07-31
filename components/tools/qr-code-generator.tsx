@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import QRCode from "qrcode"
 import { CopyButton } from "@/components/copy-button"
-import { FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 export function QrCodeGenerator() {
   const [text, setText] = useState("https://example.com")
@@ -31,13 +31,13 @@ export function QrCodeGenerator() {
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <FieldLabel htmlFor="qr-text">URL or text</FieldLabel>
         <textarea
           id="qr-text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className={textAreaClass("min-h-[120px]")}
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[120px]"
           placeholder="https://… or any text"
         />
         <div className="mt-4">
@@ -56,8 +56,8 @@ export function QrCodeGenerator() {
         <div className="mt-3 flex flex-wrap gap-2">
           <CopyButton value={text} label="Copy text" />
         </div>
-      </Panel>
-      <Panel className="flex flex-col items-center justify-center gap-4">
+      </div>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6 flex flex-col items-center justify-center gap-4">
         <canvas ref={canvasRef} className="rounded-xl border border-border bg-white p-2" />
         {error && <p className="text-sm text-destructive">{error}</p>}
         <button
@@ -68,7 +68,7 @@ export function QrCodeGenerator() {
         >
           Download PNG
         </button>
-      </Panel>
+      </div>
     </div>
   )
 }

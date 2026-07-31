@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { ArrowLeftRight } from "lucide-react"
 import { CopyButton } from "@/components/copy-button"
-import { FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 function encode(s: string) {
   try {
@@ -46,7 +46,7 @@ export function Base64Encoder() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Panel>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <FieldLabel htmlFor="b64-in">{mode === "encode" ? "Plain text" : "Base64"}</FieldLabel>
           <textarea
             id="b64-in"
@@ -54,18 +54,18 @@ export function Base64Encoder() {
             onChange={(e) => setInput(e.target.value)}
             placeholder={mode === "encode" ? "Type text to encode…" : "Paste Base64 to decode…"}
             spellCheck={false}
-            className={textAreaClass("min-h-[240px]")}
+            className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[240px]"
           />
-        </Panel>
-        <Panel>
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <div className="mb-2 flex items-center justify-between">
-            <FieldLabel>{mode === "encode" ? "Base64" : "Plain text"}</FieldLabel>
+            <span className="text-sm font-medium">{mode === "encode" ? "Base64" : "Plain text"}</span>
             <CopyButton value={output} />
           </div>
           <pre className="scroll-thin min-h-[240px] overflow-auto whitespace-pre-wrap break-all rounded-xl border border-border bg-background p-3 font-mono text-sm leading-relaxed">
             {output || <span className="text-muted-foreground">Output appears here…</span>}
           </pre>
-        </Panel>
+        </div>
       </div>
 
       <p className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground">

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { CopyButton } from "@/components/copy-button"
-import { FieldLabel, Panel, inputClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 const QUALITIES = [
   { key: "maxresdefault", label: "Max resolution", w: 1280 },
@@ -37,49 +37,52 @@ export function YoutubeThumbnailDownloader() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Panel>
-        <FieldLabel htmlFor="yt-url">YouTube URL or video ID</FieldLabel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <FieldLabel htmlFor="yt-input">YouTube URL or video ID</FieldLabel>
         <input
           id="yt-url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://www.youtube.com/watch?v=…"
-          className={inputClass()}
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
         />
-        {url && !videoId && (
-          <p className="mt-2 text-sm text-destructive">Could not find a valid video ID.</p>
-        )}
-      </Panel>
-
+        <div className="mt-4">
+          {url && !videoId && (
+            <p className="mt-2 text-sm text-destructive">Could not find a valid video ID.</p>
+          )}
+        </div>
+      </div>
       {videoId && (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {QUALITIES.map((q) => {
-            const imgUrl = `https://img.youtube.com/vi/${videoId}/${q.key}.jpg`
-            return (
-              <Panel key={q.key} className="flex flex-col gap-3">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-medium">{q.label}</span>
-                  <CopyButton value={imgUrl} label="Copy URL" />
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {QUALITIES.map((q) => {
+              const imgUrl = `https://img.youtube.com/vi/${videoId}/${q.key}.jpg`
+              return (
+                <div key={q.key} className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-medium">{q.label}</span>
+                    <CopyButton value={imgUrl} label="Copy URL" />
+                  </div>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={imgUrl}
+                    alt={`${q.label} thumbnail`}
+                    className="aspect-video w-full rounded-lg border border-border object-cover bg-muted"
+                    loading="lazy"
+                  />
+                  <a
+                    href={imgUrl}
+                    download={`youtube-${videoId}-${q.key}.jpg`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-center text-sm font-medium text-primary hover:underline"
+                  >
+                    Open / save image
+                  </a>
                 </div>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imgUrl}
-                  alt={`${q.label} thumbnail`}
-                  className="aspect-video w-full rounded-lg border border-border object-cover bg-muted"
-                  loading="lazy"
-                />
-                <a
-                  href={imgUrl}
-                  download={`youtube-${videoId}-${q.key}.jpg`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-center text-sm font-medium text-primary hover:underline"
-                >
-                  Open / save image
-                </a>
-              </Panel>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       )}
     </div>

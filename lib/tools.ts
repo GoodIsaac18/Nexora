@@ -13,6 +13,8 @@ import {
   Clock,
   Ruler,
   QrCode,
+  Scan,
+  Wifi,
   Image as ImageIcon,
   Lock,
   ScanText,
@@ -81,6 +83,12 @@ export type Tool = {
   icon: LucideIcon
   /** true once the page under /app/<slug>/page.tsx exists */
   available: boolean
+  /** Optional custom guide for the tool */
+  guide?: string
+  /** Optional custom FAQ for the tool */
+  faq?: { question: string; answer: string }[]
+  /** Optional related tool slugs for tool chaining */
+  relatedTools?: string[]
 }
 
 export const categories: ToolCategory[] = [
@@ -107,6 +115,7 @@ export const tools: Tool[] = [
     keywords: ["json formatter", "json beautifier", "json validator", "pretty print json", "minify json"],
     icon: Braces,
     available: true,
+    relatedTools: ["base64-encoder", "url-encoder", "jwt-decoder"],
   },
   {
     slug: "password-generator",
@@ -685,10 +694,34 @@ export const tools: Tool[] = [
     title: "AI Assistant Chat",
     description: "Chat with an AI assistant for general help.",
     longDescription:
-      "Have a conversation with an AI assistant for general questions, help with tasks, or just to chat. Powered by Google AI.",
+      "Have conversations with an AI assistant powered by Google AI. Get help with various tasks, ask questions, or just have a chat.",
     category: "text",
-    keywords: ["ai chat", "chatbot", "assistant", "gemini", "chat gpt"],
-    icon: MessageSquare,
+    keywords: ["ai chat", "chatbot", "assistant", "gemini", "chatgpt"],
+    icon: MessageCircle,
+    available: true,
+  },
+  {
+    slug: "qr-reader",
+    name: "QR Reader",
+    title: "QR Code Scanner",
+    description: "Scan and decode QR codes from images or camera.",
+    longDescription:
+      "Scan QR codes from uploaded images or directly from your camera. Decode URLs, text, and other data stored in QR codes instantly.",
+    category: "converters",
+    keywords: ["qr scanner", "qr reader", "decode qr", "scan qr"],
+    icon: Scan,
+    available: true,
+  },
+  {
+    slug: "wifi-qr-reader",
+    name: "WiFi QR Reader",
+    title: "WiFi QR Scanner",
+    description: "Scan WiFi QR codes to connect to networks.",
+    longDescription:
+      "Scan WiFi QR codes to instantly connect to wireless networks. Extract SSID, password, and encryption type from WiFi QR codes.",
+    category: "converters",
+    keywords: ["wifi qr", "wifi scanner", "connect wifi", "wifi password"],
+    icon: Wifi,
     available: true,
   },
 ]
@@ -709,10 +742,20 @@ export function availableTools(): Tool[] {
   return tools.filter((t) => t.available)
 }
 
-/** Related tools = same category, then fill with others. */
+/** Related tools = custom relatedTools if available, otherwise same category, then fill with others. */
 export function relatedTools(slug: string, limit = 4): Tool[] {
   const current = getTool(slug)
   if (!current) return []
+  
+  // Use custom relatedTools if available
+  if (current.relatedTools && current.relatedTools.length > 0) {
+    const customRelated = current.relatedTools
+      .map(rs => getTool(rs))
+      .filter((t): t is Tool => t !== undefined && t.available)
+    return customRelated.slice(0, limit)
+  }
+  
+  // Fallback to category-based suggestions
   const sameCategory = tools.filter((t) => t.category === current.category && t.slug !== slug && t.available)
   const others = tools.filter((t) => t.category !== current.category && t.slug !== slug && t.available)
   return [...sameCategory, ...others].slice(0, limit)
@@ -722,21 +765,78 @@ export function toolMetadata(slug: string) {
   const tool = getTool(slug)
   if (!tool) return {}
   const url = `${SITE.url}/${slug}`
-  return {
-    title: tool.title,
+  const category = getCategory(tool.category)
+  
+  // Schema.org FAQPage structured data
+  const faqSchema = tool.faq ? {
+    "@type": "FAQPage",
+    mainEntity: tool.faq.map(faq => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer
+      }
+    }))
+  } : null
+
+  // Schema.org SoftwareApplication structured data
+  const softwareSchema = {
+    "@type": "SoftwareApplication",
+    name: tool.title,
     description: tool.longDescription,
-    keywords: tool.keywords,
+    applicationCategory: category?.name || "UtilityApplication",
+    operatingSystem: "Any",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD"
+    },
+    featureList: tool.keywords.join(", "),
+    browserRequirements: "Requires JavaScript. Requires HTML5."
+  }
+
+  return {
+    title: `${tool.title} - Gratis Online | ${SITE.name}`,
+    description: `${tool.longDescription} Gratis, sin registro, online. ${tool.keywords.slice(0, 3).join(", ")}.`,
+    keywords: tool.keywords.join(", "),
     alternates: { canonical: `/${slug}` },
     openGraph: {
       type: "website" as const,
-      title: `${tool.title} — ${SITE.name}`,
-      description: tool.longDescription,
+      title: `${tool.title} - Gratis Online | ${SITE.name}`,
+      description: `${tool.longDescription} Gratis, sin registro, online.`,
       url,
+      siteName: SITE.name,
+      locale: "es_ES",
     },
     twitter: {
       card: "summary_large_image" as const,
-      title: `${tool.title} — ${SITE.name}`,
-      description: tool.longDescription,
+      title: `${tool.title} - Gratis Online | ${SITE.name}`,
+      description: `${tool.longDescription} Gratis, sin registro, online.`,
     },
+    other: {
+      "application/ld+json": JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": url,
+            url,
+            name: tool.title,
+            description: tool.longDescription,
+            inLanguage: "es",
+            isPartOf: {
+              "@type": "WebSite",
+              "@id": SITE.url,
+              name: SITE.name,
+              url: SITE.url
+            },
+            about: softwareSchema
+          },
+          softwareSchema,
+          ...(faqSchema ? [faqSchema] : [])
+        ]
+      })
+    }
   }
 }

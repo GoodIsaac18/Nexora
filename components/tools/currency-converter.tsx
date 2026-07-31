@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { DollarSign, ArrowRightLeft, RefreshCw } from "lucide-react"
-import { ActionButton, FieldLabel, Panel, inputClass } from "@/components/tools/ui"
+import { ActionButton, FieldLabel, inputClass } from "@/components/tools/ui"
 
 const currencies = [
   { code: "USD", name: "US Dollar", symbol: "$" },
@@ -84,7 +84,7 @@ export function CurrencyConverter() {
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex items-center gap-2 mb-4">
           <DollarSign className="size-5" />
           <h3 className="text-lg font-semibold">Convertidor de Divisa</h3>
@@ -181,7 +181,7 @@ export function CurrencyConverter() {
             </div>
           </div>
         )}
-      </Panel>
+      </div>
 
       <p className="text-xs text-muted-foreground">
         Tasas de cambio proporcionadas por ExchangeRate-API. Las tasas pueden variar según el mercado. Para transacciones reales, verifica con tu banco o servicio financiero.

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { CopyButton } from "@/components/copy-button"
-import { FieldLabel, Panel, inputClass, textAreaClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 function normalizePhone(raw: string): string {
   return raw.replace(/\D/g, "")
@@ -31,7 +31,7 @@ export function WhatsappLinkGenerator() {
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <Panel className="flex flex-col gap-4">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6 flex flex-col gap-4">
         <div>
           <FieldLabel htmlFor="wa-phone">Phone (country code + number)</FieldLabel>
           <input
@@ -39,7 +39,7 @@ export function WhatsappLinkGenerator() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="5215512345678"
-            className={inputClass()}
+            className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <p className="mt-1 text-xs text-muted-foreground">Sin +, espacios ni guiones. Ej: 57 para Colombia + número.</p>
         </div>
@@ -49,51 +49,36 @@ export function WhatsappLinkGenerator() {
             id="wa-msg"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className={textAreaClass("min-h-[100px]")}
+            className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             placeholder="Hola, me interesa…"
           />
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={prefilled}
+              onChange={(e) => setPrefilled(e.target.checked)}
+              className="size-4 rounded border-border"
+            />
+            Incluir mensaje en el enlace
+          </label>
         </div>
-        <label className="flex cursor-pointer items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={prefilled}
-            onChange={(e) => setPrefilled(e.target.checked)}
-            className="size-4 rounded border-border"
-          />
-          Incluir mensaje en el enlace
-        </label>
-      </Panel>
-
-      <Panel className="flex flex-col gap-4">
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <FieldLabel>Enlace wa.me (recomendado)</FieldLabel>
-            <CopyButton value={link} />
-          </div>
-          <pre className="min-h-[72px] whitespace-pre-wrap break-all rounded-xl border border-border bg-background p-3 font-mono text-sm">
-            {link || "Completa el teléfono…"}
-          </pre>
-          {link && (
-            <a
-              href={link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-block text-sm font-medium text-primary hover:underline"
-            >
-              Abrir en WhatsApp
-            </a>
-          )}
+      </div>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6 flex flex-col gap-4">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-sm font-medium">wa.me link</span>
+          <CopyButton value={link} />
         </div>
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <FieldLabel>Enlace api.whatsapp.com</FieldLabel>
-            <CopyButton value={apiLink} />
-          </div>
-          <pre className="min-h-[72px] whitespace-pre-wrap break-all rounded-xl border border-border bg-background p-3 font-mono text-xs">
-            {apiLink || "—"}
-          </pre>
+        <pre className="scroll-thin min-h-[100px] overflow-auto whitespace-pre-wrap break-all rounded-xl border border-border bg-background p-3 font-mono text-sm">
+          {link || <span className="text-muted-foreground">—</span>}
+        </pre>
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-sm font-medium">api.whatsapp.com link</span>
+          <CopyButton value={apiLink} />
         </div>
-      </Panel>
+        <pre className="scroll-thin min-h-[100px] overflow-auto whitespace-pre-wrap break-all rounded-xl border border-border bg-background p-3 font-mono text-sm">
+          {apiLink || <span className="text-muted-foreground">—</span>}
+        </pre>
+      </div>
     </div>
   )
 }

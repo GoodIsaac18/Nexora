@@ -1,12 +1,13 @@
 import { Analytics } from "@vercel/analytics/next"
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
+import Script from "next/script"
 import { SITE } from "@/lib/tools"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { AdSenseScript } from "@/components/adsense-loader"
-import { ThemeScript } from "@/components/theme-script"
 import { Chatbot } from "@/components/chatbot"
+import { CookieBanner } from "@/components/cookie-banner"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -70,7 +71,20 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <ThemeScript />
+        <script
+          id="theme-script"
+          dangerouslySetInnerHTML={{
+            __html: `(function() {
+  try {
+    var t = localStorage.getItem('theme');
+    var m = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (t === 'dark' || (!t && m)) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+    if (t) document.documentElement.classList.add(t);
+  } catch (e) {}
+})();`
+          }}
+        />
       </head>
       <body className="min-h-dvh font-sans antialiased">
         <div className="flex min-h-dvh flex-col">
@@ -81,6 +95,7 @@ export default function RootLayout({
         <AdSenseScript />
         {process.env.NODE_ENV === "production" && <Analytics />}
         <Chatbot />
+        <CookieBanner />
       </body>
     </html>
   )

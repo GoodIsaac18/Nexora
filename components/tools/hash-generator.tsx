@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { CopyButton } from "@/components/copy-button"
-import { FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
+import { FieldLabel } from "@/components/tools/ui"
 
 const ALGOS = ["SHA-1", "SHA-256", "SHA-384", "SHA-512"] as const
 
@@ -34,19 +34,19 @@ export function HashGenerator() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Panel>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <FieldLabel htmlFor="hash-input">Text to hash</FieldLabel>
         <textarea
           id="hash-input"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type text to hash…"
-          className={textAreaClass("min-h-[140px] font-sans")}
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[140px] font-sans"
         />
-      </Panel>
+      </div>
       <div className="flex flex-col gap-3">
         {ALGOS.map((a) => (
-          <Panel key={a}>
+          <div key={a} className="rounded-xl border border-border bg-card p-4 sm:p-6">
             <div className="mb-2 flex items-center justify-between">
               <span className="text-sm font-semibold">{a}</span>
               <CopyButton value={hashes[a] || ""} disabled={!hashes[a]} />
@@ -54,7 +54,7 @@ export function HashGenerator() {
             <code className="scroll-thin block overflow-x-auto whitespace-nowrap rounded-lg bg-background p-2 font-mono text-sm">
               {hashes[a] || <span className="text-muted-foreground">—</span>}
             </code>
-          </Panel>
+          </div>
         ))}
       </div>
     </div>
