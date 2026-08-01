@@ -230,7 +230,8 @@ export function ToolBrowser() {
                       {items.map((t, i) => {
                         const hasScrolled = scrolledCarousels[category.slug] || false
                         const isVisible = visibleItems[category.slug]?.has(i)
-                        const shouldFade = hasScrolled && !isVisible
+                        // Solo aplicar fade en móvil, en PC mostrar siempre visible
+                        const shouldFade = isMobile && hasScrolled && !isVisible
                         
                         return (
                           <div
