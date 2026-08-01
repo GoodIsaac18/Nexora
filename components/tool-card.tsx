@@ -1,9 +1,35 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Heart } from "lucide-react"
 import type { Tool } from "@/lib/tools"
 import { cn } from "@/lib/utils"
 
 export function ToolCard({ tool, className }: { tool: Tool; className?: string }) {
+  const [liked, setLiked] = useState(false)
+  const [likes, setLikes] = useState(0)
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (liked) return
+    
+    try {
+      await fetch("/api/analytics/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: tool.slug, action: "like" })
+      })
+      
+      setLiked(true)
+      setLikes(prev => prev + 1)
+    } catch (error) {
+      console.error("Error liking tool:", error)
+    }
+  }
+
   const Icon = tool.icon
   const content = (
     <>
@@ -21,6 +47,20 @@ export function ToolCard({ tool, className }: { tool: Tool; className?: string }
       </div>
       <h3 className="mt-4 font-semibold tracking-tight group-hover:text-primary transition-colors lg:mt-5 lg:text-lg lg:font-bold">{tool.name}</h3>
       <p className="mt-1 text-sm leading-relaxed text-muted-foreground group-hover:text-foreground/80 transition-colors lg:mt-2">{tool.description}</p>
+      
+      {/* Like button */}
+      {tool.available && (
+        <button
+          onClick={handleLike}
+          className={cn(
+            "mt-3 flex items-center gap-1.5 text-xs transition-colors lg:mt-4 lg:text-sm",
+            liked ? "text-red-500" : "text-muted-foreground hover:text-red-500"
+          )}
+        >
+          <Heart className={cn("size-3.5 lg:size-4", liked && "fill-current")} />
+          <span>{likes > 0 ? likes : "Me gusta"}</span>
+        </button>
+      )}
       
       {/* Decorative gradient on hover - only on large screens */}
       <div className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:rounded-3xl" />
