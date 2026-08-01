@@ -26,6 +26,9 @@ export function ToolBrowser() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     return tools.filter((t) => {
+      // Only show available tools
+      if (!t.available) return false
+      
       const matchesCategory = !activeCategory || t.category === activeCategory
       if (!matchesCategory) return false
       if (!q) return true
