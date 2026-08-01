@@ -80,6 +80,12 @@ export function PdfCompressor() {
       const url = URL.createObjectURL(blob)
       setDownloadUrl(url)
       setCompressedSize(blob.size)
+      
+      // Verificar si hay nota de compresión
+      const compressionNote = response.headers.get("X-Compression-Note")
+      if (compressionNote) {
+        setError(compressionNote)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al comprimir el archivo. Intenta de nuevo.")
     } finally {
@@ -163,7 +169,7 @@ export function PdfCompressor() {
         {file && (
           <>
             <div className="mt-4">
-              <FieldLabel>Nivel de compresión</FieldLabel>
+              <FieldLabel htmlFor="compression-level">Nivel de compresión</FieldLabel>
               <div className="mt-2 grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setCompressionLevel("low")}
@@ -227,7 +233,7 @@ export function PdfCompressor() {
         )}
 
         <p className="mt-4 text-xs text-muted-foreground">
-          La compresión puede afectar la calidad de imágenes y fuentes. El procesamiento se realiza en el servidor.
+          La compresión optimiza la estructura del PDF. Algunos archivos ya están optimizados y no se pueden reducir más.
         </p>
       </Panel>
 

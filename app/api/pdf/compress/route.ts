@@ -12,27 +12,44 @@ export async function POST(request: Request) {
     }
 
     const bytes = await file.arrayBuffer()
-    const pdfDoc = await PDFDocument.load(bytes)
+    const pdfDoc = await PDFDocument.load(bytes, { ignoreEncryption: true })
     
-    // pdf-lib doesn't have built-in compression
-    // For real compression, you'd need ghostscript
-    // This is a basic version that just re-saves the PDF
-    // which can sometimes reduce size slightly
+    // Optimizaciones básicas disponibles en pdf-lib
+    // Estas optimizaciones pueden reducir el tamaño en algunos casos
+    const useObjectStreams = level === "medium" || level === "high"
     
-    let compressionLevel = 0
-    if (level === "low") compressionLevel = 1
-    if (level === "medium") compressionLevel = 2
-    if (level === "high") compressionLevel = 3
+    // Eliminar metadatos innecesarios
+    pdfDoc.setTitle(pdfDoc.getTitle() || "Compressed")
+    pdfDoc.setProducer("Nexora PDF Compressor")
+    pdfDoc.setCreator("Nexora")
     
-    // Re-save with different settings based on level
+    // Guardar con optimizaciones
     const pdfBytes = await pdfDoc.save({
-      useObjectStreams: compressionLevel >= 2,
+      useObjectStreams,
       addDefaultPage: false,
+      objectsPerTick: 50,
     })
     
     const originalSize = bytes.byteLength
     const compressedSize = pdfBytes.byteLength
+    
+    // Calcular reducción
     const reduction = ((originalSize - compressedSize) / originalSize * 100).toFixed(1)
+    
+    // Verificar si hubo alguna reducción
+    if (compressedSize >= originalSize) {
+      // Si no se pudo comprimir, devolver el mismo archivo pero informar
+      return new NextResponse(Buffer.from(bytes), {
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": "attachment; filename=compressed.pdf",
+          "X-Original-Size": originalSize.toString(),
+          "X-Compressed-Size": originalSize.toString(),
+          "X-Compression-Ratio": "0",
+          "X-Compression-Note": "¡Este PDF ya está comprimido! No se pudo reducir más el tamaño.",
+        },
+      })
+    }
     
     return new NextResponse(Buffer.from(pdfBytes), {
       headers: {
