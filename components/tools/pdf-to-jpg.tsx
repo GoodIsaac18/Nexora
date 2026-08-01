@@ -3,12 +3,6 @@
 import { useState, useRef } from "react"
 import { Download, Upload, FileText, Image as ImageIcon, Loader2, AlertCircle } from "lucide-react"
 import { ActionButton, FieldLabel, Panel, inputClass } from "@/components/tools/ui"
-import * as pdfjsLib from "pdfjs-dist"
-
-// Set worker source to use local worker
-if (typeof window !== "undefined") {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js"
-}
 
 export function PdfToJpg() {
   const [file, setFile] = useState<File | null>(null)
@@ -61,6 +55,12 @@ export function PdfToJpg() {
     setDownloadUrls([])
 
     try {
+      // Import pdfjs-dist dynamically to avoid SSR issues
+      const pdfjsLib = await import("pdfjs-dist")
+      
+      // Set worker source
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js"
+      
       const arrayBuffer = await file.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
       
