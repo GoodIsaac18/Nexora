@@ -37,7 +37,7 @@ export function ToolShell({ slug, children }: { slug: string; children: ReactNod
           {category && (
             <>
               <li>
-                <Link href={`/#${category.slug}`} className="rounded-lg px-2 py-1 transition-all hover:bg-muted hover:text-foreground lg:rounded-xl lg:px-3 lg:py-2">
+                <Link href={`/category/${category.slug}`} className="rounded-lg px-2 py-1 transition-all hover:bg-muted hover:text-foreground lg:rounded-xl lg:px-3 lg:py-2">
                   {category.name}
                 </Link>
               </li>

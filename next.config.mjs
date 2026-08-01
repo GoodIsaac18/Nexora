@@ -6,6 +6,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Ocultar completamente el indicador de desarrollo de Next.js
+  devIndicators: false,
+  reactStrictMode: true,
   async headers() {
     return [
       {

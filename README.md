@@ -1,145 +1,170 @@
 # Nexora
 
-Una colección completa de herramientas online gratuitas y privadas para desarrolladores, creadores y usuarios en general. Todas las herramientas funcionan directamente en tu navegador.
+Nexora es una plataforma de herramientas online orientada a velocidad, privacidad y claridad de uso. El proyecto reúne utilidades para desarrolladores, creadores de contenido y usuarios generales en una sola experiencia web, sin necesidad de registro y con procesamiento local cuando la herramienta lo permite.
 
-## 🚀 Características
+## Resumen ejecutivo
 
-- **100% Privado**: Todo el procesamiento se realiza localmente en tu navegador
-- **Sin Registro**: No necesitas crear una cuenta
-- **Rápido y Gratuito**: Todas las herramientas son completamente gratuitas
-- **Diseño Moderno**: Interfaz limpia y fácil de usar
-- **Responsive**: Funciona en desktop, tablet y móvil
+El objetivo de Nexora es ofrecer una colección amplia de herramientas prácticas que puedan resolverse en pocos pasos, con una interfaz moderna y una estructura pensada para descubrimiento por categorías, SEO y navegación directa.
 
-## 📂 Categorías de Herramientas
+## Principios del producto
 
-### 🔧 Convertidores
+- Privacidad primero: las herramientas que lo permiten procesan la información directamente en el navegador.
+- Acceso sin fricción: no se requiere cuenta para usar las utilidades principales.
+- Rapidez de uso: cada herramienta está diseñada para resolver una tarea concreta con la menor cantidad de pasos posible.
+- Organización por intención: el catálogo está agrupado por categorías para facilitar la exploración.
+- Experiencia responsive: la interfaz se adapta a desktop, tablet y móvil.
 
-Herramientas para transformar datos entre diferentes formatos.
+## Funcionalidades principales
 
-| Herramienta | Descripción |
-|-------------|-------------|
-| **JSON Formatter** | Formatea, minifica y valida JSON al instante |
-| **Markdown to HTML** | Convierte Markdown a HTML con vista previa en vivo |
-| **Base64 Encoder/Decode** | Codifica texto a Base64 o decodifícalo |
-| **URL Encoder/Decoder** | Codifica o decodifica componentes de URL de forma segura |
-| **Timestamp Converter** | Convierte entre timestamps Unix y fechas legibles |
-| **Unit Converter** | Convierte entre unidades métricas e imperiales (longitud, peso, temperatura, volumen) |
+### Conversión y formato
 
-### 🔐 Generadores
-
-Crea IDs, contraseñas, tokens y contenido boilerplate.
+Herramientas para transformar datos entre distintos formatos.
 
 | Herramienta | Descripción |
 |-------------|-------------|
-| **Password Generator** | Genera contraseñas seguras y aleatorias con reglas personalizadas |
-| **UUID Generator** | Genera UUIDs v4 en bulk y cópialos rápidamente |
-| **Hash Generator** | Genera hashes criptográficos (SHA-1, SHA-256, SHA-384, SHA-512) |
-| **Lorem Ipsum Generator** | Genera texto placeholder por párrafos, oraciones o palabras |
-| **QR Code Generator** | Convierte cualquier enlace o texto en un código QR descargable |
+| JSON Formatter | Formatea, minifica y valida JSON al instante |
+| Markdown to HTML | Convierte Markdown a HTML con vista previa en vivo |
+| Base64 Encoder/Decode | Codifica texto a Base64 o lo decodifica |
+| URL Encoder/Decoder | Codifica o decodifica componentes de URL de forma segura |
+| Timestamp Converter | Convierte entre timestamps Unix y fechas legibles |
+| Unit Converter | Convierte entre unidades métricas e imperiales |
 
-### 📝 Texto y Contenido
+### Generación
 
-Manipula, cuenta y limpia texto.
-
-| Herramienta | Descripción |
-|-------------|-------------|
-| **Word Counter** | Cuenta palabras, caracteres, oraciones y tiempo de lectura |
-| **Case Converter** | Convierte texto entre UPPERCASE, lowercase, Title Case, camelCase, snake_case, kebab-case y CONSTANT_CASE |
-
-### 🌐 Web y SEO
-
-Utilidades para construir y posicionar sitios web.
+Herramientas para crear valores únicos, contenido base y activos reutilizables.
 
 | Herramienta | Descripción |
 |-------------|-------------|
-| **Meta Tag Generator** | Genera meta tags SEO y Open Graph para cualquier página |
-| **YouTube Thumbnail Downloader** | Descarga miniaturas de videos de YouTube en todas las resoluciones |
-| **JWT Decoder** | Decodifica e inspecciona JSON Web Tokens localmente |
-| **WhatsApp Link Generator** | Crea enlaces wa.me con mensajes prellenados opcionales |
-| **Link Shortener** | Acorta URLs largas para compartir fácilmente (vía is.gd) |
-| **UTM Link Builder** | Agrega parámetros de seguimiento de campañas a cualquier URL |
+| Password Generator | Genera contraseñas seguras con reglas personalizadas |
+| UUID Generator | Genera UUID v4 de forma individual o masiva |
+| Hash Generator | Genera hashes criptográficos como SHA-1, SHA-256 y SHA-512 |
+| Lorem Ipsum Generator | Genera texto de relleno por párrafos, oraciones o palabras |
+| QR Code Generator | Convierte texto o enlaces en códigos QR descargables |
 
-### 🎨 Diseño y Color
+### Texto y contenido
 
-Elige colores y crea activos visuales.
-
-| Herramienta | Descripción |
-|-------------|-------------|
-| **Color Picker** | Elige un color y convierte entre HEX, RGB y HSL |
-
-### 📺 Media y Video
-
-Descarga y convierte videos de plataformas populares.
+Utilidades para manipular, analizar y limpiar texto.
 
 | Herramienta | Descripción |
 |-------------|-------------|
-| **TikTok Downloader** | Descarga videos de TikTok sin marca de agua en HD y extrae audio MP3 |
-| **YouTube Downloader** | Descarga videos de YouTube en múltiples calidades y formatos, extrae audio MP3/M4A |
-| **Instagram Downloader** | Descarga Reels, videos y fotos de Instagram |
-| **Facebook Downloader** | Descarga videos de Facebook en múltiples calidades |
-| **X Video Downloader** | Descarga videos y GIFs de X/Twitter |
-| **Video Converter** | Convierte videos entre diferentes formatos (MP4, WebM) y extrae audio a MP3 |
+| Word Counter | Cuenta palabras, caracteres, oraciones y tiempo de lectura |
+| Case Converter | Convierte texto entre múltiples estilos de capitalización |
 
-### 📄 PDF Tools
+### Web y SEO
 
-Convierte, fusiona, divide y manipula archivos PDF.
+Utilidades para construcción, optimización y distribución web.
 
 | Herramienta | Descripción |
 |-------------|-------------|
-| **PDF to JPG** | Convierte páginas de PDF a imágenes JPG de alta calidad |
-| **JPG to PDF** | Combina una o más imágenes JPG en un documento PDF |
-| **PDF Unlocker** | Elimina la protección por contraseña de archivos PDF |
-| **PDF Merger** | Fusiona múltiples archivos PDF en uno solo |
-| **PDF Splitter** | Divide PDFs en páginas individuales o rangos personalizados |
-| **PDF Compressor** | Comprime archivos PDF reduciendo su tamaño manteniendo la calidad |
+| Meta Tag Generator | Genera metadatos SEO, Open Graph y Twitter Card |
+| YouTube Thumbnail Downloader | Descarga miniaturas de videos de YouTube en distintas resoluciones |
+| JWT Decoder | Decodifica e inspecciona JSON Web Tokens localmente |
+| WhatsApp Link Generator | Crea enlaces wa.me con mensajes prellenados opcionales |
+| Link Shortener | Acorta URLs largas para compartir fácilmente |
+| UTM Link Builder | Agrega parámetros de seguimiento a cualquier URL |
 
-## 🛠️ Instalación
+### Diseño y color
+
+Herramientas enfocadas en selección cromática y composición visual.
+
+| Herramienta | Descripción |
+|-------------|-------------|
+| Color Picker | Convierte entre HEX, RGB y HSL a partir de un color elegido |
+
+### Media y video
+
+Herramientas para descarga, extracción y conversión de contenido multimedia.
+
+| Herramienta | Descripción |
+|-------------|-------------|
+| TikTok Downloader | Descarga videos de TikTok sin marca de agua |
+| YouTube Downloader | Descarga videos de YouTube y extrae audio en distintos formatos |
+| Instagram Downloader | Descarga reels, videos y fotos de Instagram |
+| Facebook Downloader | Descarga videos de Facebook en distintas calidades |
+| X Video Downloader | Descarga videos y GIFs de X/Twitter |
+| Video Converter | Convierte videos entre formatos y extrae audio |
+
+### PDF
+
+Conjunto de herramientas para convertir, fusionar, dividir y optimizar documentos PDF.
+
+| Herramienta | Descripción |
+|-------------|-------------|
+| PDF to JPG | Convierte páginas de PDF a imágenes JPG |
+| JPG to PDF | Combina una o más imágenes en un documento PDF |
+| PDF Unlocker | Elimina la protección por contraseña de archivos PDF |
+| PDF Merger | Fusiona múltiples archivos PDF en uno solo |
+| PDF Splitter | Divide PDFs en páginas individuales o rangos personalizados |
+| PDF Compressor | Comprime archivos PDF reduciendo su tamaño |
+
+## Arquitectura técnica
+
+El proyecto está construido con el siguiente stack:
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Lucide React
+- Vercel Analytics
+- shadcn/ui y componentes auxiliares internos
+
+## Instalación y ejecución
+
+### Requisitos
+
+- Node.js instalado
+- npm o pnpm como gestor de paquetes
+
+### Instalación
 
 ```bash
-# Clonar el repositorio
 git clone <repository-url>
 cd digital-tool-library
-
-# Instalar dependencias
 npm install
-# o
-pnpm install
+```
 
-# Iniciar servidor de desarrollo
+### Desarrollo
+
+```bash
 npm run dev
-# o
-pnpm dev
+```
 
-# Construir para producción
+### Producción
+
+```bash
 npm run build
 npm start
 ```
 
-## 📦 Dependencias
+## Configuración
 
-- **Next.js 16** - Framework React
-- **React 19** - Biblioteca UI
-- **TailwindCSS 4** - Framework CSS
-- **Lucide React** - Iconos
-- **youtubei.js** - API de YouTube para descargas
-- **shadcn/ui** - Componentes UI
+El proyecto puede requerir variables de entorno para funcionalidades como publicidad, analítica o integraciones externas. Para una instalación local, copia el archivo de ejemplo de entorno si está disponible y completa los valores necesarios.
 
-## 🔧 Configuración
+## Estructura del proyecto
 
-El proyecto usa variables de entorno para configuración. Copia `.env.example` a `.env.local` y configura las variables necesarias.
+- `app/`: páginas, layouts, rutas y metadatos.
+- `components/`: interfaz reutilizable y módulos específicos de cada herramienta.
+- `lib/`: configuración de sitio, catálogo de herramientas y utilidades compartidas.
+- `hooks/`: lógica reutilizable para estado y comportamiento.
+- `public/`: activos estáticos como imágenes, scripts y recursos compartidos.
 
-## 📄 Licencia
+## Estado del proyecto
 
-Este proyecto es de código abierto y está disponible bajo la licencia MIT.
+Nexora se encuentra en una fase funcional avanzada. El catálogo principal ya está definido y las herramientas están organizadas por categorías. El siguiente foco natural del proyecto es fortalecer la documentación operativa, la validación automatizada y la expansión del contenido SEO por categoría.
 
-## 🤝 Contribuciones
+## Contribuciones
 
-Las contribuciones son bienvenidas. Por favor abre un issue o pull request para cualquier mejora o corrección.
+Las contribuciones son bienvenidas. Si deseas proponer una mejora, corregir un comportamiento o incorporar una herramienta nueva, abre un issue o pull request con una descripción clara del cambio.
 
-## 📞 Soporte
+## Soporte
 
-Para reportar bugs o solicitar características, por favor abre un issue en el repositorio.
+Para reportar errores o solicitar nuevas funcionalidades, utiliza el sistema de issues del repositorio.
+
+## Licencia
+
+Este proyecto se distribuye bajo licencia MIT.
 
 ---
 
-**Total de herramientas**: 28+ herramientas organizadas en 7 categorías
+**Total de herramientas**: 28+ herramientas organizadas en categorías funcionales

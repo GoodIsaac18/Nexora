@@ -64,10 +64,10 @@ export function SiteHeader() {
                     {categories.filter(cat => cat.slug === c.slug).map(cat => (
                       <Link
                         key={cat.slug}
-                        href={`/#${cat.slug}`}
+                        href={`/category/${cat.slug}`}
                         className="block rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
                       >
-                        {cat.name}
+                        View {cat.name}
                       </Link>
                     ))}
                   </div>
@@ -111,7 +111,7 @@ export function SiteHeader() {
             {categories.map((c) => (
               <Link
                 key={c.slug}
-                href={`/#${c.slug}`}
+                href={`/category/${c.slug}`}
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-4 py-3 text-sm font-medium text-muted-foreground transition-all duration-200 active:scale-95 hover:bg-muted hover:text-foreground"
               >
