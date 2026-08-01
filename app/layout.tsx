@@ -48,6 +48,9 @@ export const metadata: Metadata = {
     icon: "/nexora.png",
     apple: "/nexora.png",
   },
+  other: {
+    "google-adsense-account": "ca-pub-6351511741135891",
+  },
 }
 
 export const viewport: Viewport = {
@@ -84,6 +87,11 @@ export default function RootLayout({
   } catch (e) {}
 })();`
           }}
+        />
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6351511741135891"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
       </head>
       <body className="min-h-dvh font-sans antialiased">
