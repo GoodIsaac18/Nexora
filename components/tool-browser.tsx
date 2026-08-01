@@ -73,10 +73,10 @@ export function ToolBrowser() {
         items.forEach((item, index) => {
           const itemRect = item.getBoundingClientRect()
           
-          // En móvil, usar una detección más permisiva
-          const buffer = isMobile ? 50 : 0
+          // Usar buffer para mejor detección en ambos móviles y PC
+          const buffer = isMobile ? 50 : 20
           
-          // Si está dentro del área visible del contenedor (con buffer para móvil)
+          // Si está dentro del área visible del contenedor (con buffer)
           if (itemRect.left >= containerRect.left - buffer && itemRect.right <= containerRect.right + buffer) {
             categoryVisible.add(index)
           }
@@ -88,7 +88,7 @@ export function ToolBrowser() {
         }))
 
         // Detectar si el carrusel ha sido scrolleado
-        const hasScrolled = container.scrollLeft > 10 // Reducir umbral para móvil
+        const hasScrolled = container.scrollLeft > 5 // Umbral más bajo para PC
         setScrolledCarousels(prev => ({
           ...prev,
           [categorySlug]: hasScrolled
