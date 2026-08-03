@@ -36,7 +36,10 @@ export function getFailedSearchMetrics() {
 
 export async function POST(request: Request) {
   try {
-    const { message, history = [] } = await request.json()
+    const formData = await request.formData()
+    const message = formData.get("message") as string
+    const historyJson = formData.get("history") as string
+    const files = formData.getAll("files") as File[]
 
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message is required" }, { status: 400 })
@@ -48,6 +51,16 @@ export async function POST(request: Request) {
     // Verificar longitud
     if (sanitized.length < 1 || sanitized.length > 2000) {
       return NextResponse.json({ error: "Message must be between 1 and 2000 characters" }, { status: 400 })
+    }
+
+    // Parse history
+    let history = []
+    try {
+      if (historyJson) {
+        history = JSON.parse(historyJson)
+      }
+    } catch {
+      history = []
     }
 
     // Rate limiting
@@ -67,24 +80,57 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Rate limit exceeded. Please try again later." }, { status: 429 })
     }
 
-    // Check cache first
-    const cacheKey = sanitized.toLowerCase().trim()
-    const cached = queryCache.get(cacheKey)
-    if (cached && now - cached.timestamp < CACHE_DURATION) {
-      const tool = tools.find(t => t.slug === cached.toolId)
-      if (tool) {
-        // Track successful cache hit
-        return NextResponse.json({ 
-          response: `Te recomiendo usar: ${tool.name}. ${tool.description}`,
-          toolId: cached.toolId,
-          confidence: cached.confidence,
-          fromCache: true
-        })
+    // Process files if present
+    let fileContext = ""
+    if (files && files.length > 0) {
+      for (const file of files) {
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+          return NextResponse.json({ error: "File size exceeds 10MB limit" }, { status: 400 })
+        }
+        
+        const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain', 'text/markdown']
+        if (!validTypes.includes(file.type)) {
+          return NextResponse.json({ error: `Invalid file type: ${file.type}` }, { status: 400 })
+        }
+        
+        // For text files, read content
+        if (file.type === 'text/plain' || file.type === 'text/markdown') {
+          const text = await file.text()
+          fileContext += `\n\nArchivo: ${file.name}\n${text}\n`
+        } else {
+          // For PDF/Word, just note the file name (actual parsing would require additional libraries)
+          fileContext += `\n\nArchivo adjunto: ${file.name} (${file.type})\n`
+        }
       }
     }
 
-    // System prompt with compact tool descriptions
-    const systemPrompt = `Eres un asistente que recomienda herramientas. Analiza la consulta del usuario y devuelve SOLO un JSON con esta estructura:
+    // Check cache first (only if no files)
+    if (files.length === 0) {
+      const cacheKey = sanitized.toLowerCase().trim()
+      const cached = queryCache.get(cacheKey)
+      if (cached && now - cached.timestamp < CACHE_DURATION) {
+        const tool = tools.find(t => t.slug === cached.toolId)
+        if (tool) {
+          return NextResponse.json({ 
+            response: `Te recomiendo usar: ${tool.name}. ${tool.description}`,
+            toolId: cached.toolId,
+            confidence: cached.confidence,
+            fromCache: true
+          })
+        }
+      }
+    }
+
+    // System prompt with file context if present
+    const systemPrompt = fileContext 
+      ? `Eres un asistente de IA completo. Puedes analizar documentos y responder preguntas sobre ellos.
+        
+Contexto de archivos:${fileContext}
+
+Consulta del usuario: ${sanitized}
+
+Responde de manera útil y completa. Si el usuario pregunta sobre herramientas, recomienda las más adecuadas.`
+      : `Eres un asistente que recomienda herramientas. Analiza la consulta del usuario y devuelve SOLO un JSON con esta estructura:
 {"tool_id": "slug-de-la-herramienta", "confidence": 0.0-1.0}
 
 Herramientas disponibles:
@@ -111,22 +157,17 @@ Consulta: ${sanitized}`
           },
         ],
         generationConfig: {
-          temperature: 0.3, // Lower temperature for more consistent JSON output
+          temperature: fileContext ? 0.7 : 0.3, // Higher temperature for document analysis
           topK: 20,
           topP: 0.8,
-          maxOutputTokens: 100, // Minimal output for JSON only
-          responseMimeType: "application/json", // Request JSON output
+          maxOutputTokens: fileContext ? 2000 : 100, // More tokens for document analysis
+          responseMimeType: fileContext ? "text/plain" : "application/json",
         },
       }),
     })
 
     if (!response.ok) {
       const error = await response.json()
-      // Track failed search
-      failedSearches.set(cacheKey, { 
-        count: (failedSearches.get(cacheKey)?.count || 0) + 1, 
-        lastFailed: now 
-      })
       return NextResponse.json(
         { error: error.error?.message || "Error en la API de Google AI" },
         { status: response.status }
@@ -136,7 +177,16 @@ Consulta: ${sanitized}`
     const data = await response.json()
     const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
     
-    // Parse JSON response
+    // If files were present, return the AI response directly
+    if (fileContext) {
+      return NextResponse.json({ 
+        response: generatedText || "Lo siento, no pude procesar tu solicitud.",
+        toolId: null,
+        confidence: 0
+      })
+    }
+    
+    // Parse JSON response for tool recommendations
     let toolId: string | null = null
     let confidence = 0
     
@@ -158,11 +208,13 @@ Consulta: ${sanitized}`
 
     // Cache the result if confidence is high
     if (toolId && confidence > 0.7) {
+      const cacheKey = sanitized.toLowerCase().trim()
       queryCache.set(cacheKey, { toolId, confidence, timestamp: now })
     }
 
     // Track failed search if no tool found
     if (!toolId) {
+      const cacheKey = sanitized.toLowerCase().trim()
       failedSearches.set(cacheKey, { 
         count: (failedSearches.get(cacheKey)?.count || 0) + 1, 
         lastFailed: now 
@@ -185,9 +237,6 @@ Consulta: ${sanitized}`
 
     const tool = tools.find(t => t.slug === toolId)
     if (tool) {
-      // Cache successful match
-      queryCache.set(cacheKey, { toolId, confidence, timestamp: now })
-      
       return NextResponse.json({ 
         response: `Te recomiendo usar: ${tool.name}. ${tool.description}`,
         toolId,

@@ -1,24 +1,50 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { BarChart3, TrendingUp, TrendingDown, AlertTriangle, Users, Heart } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { BarChart3, TrendingUp, TrendingDown, AlertTriangle, Users, Heart, MessageSquare, LogOut } from "lucide-react"
 
 interface AnalyticsData {
   slug: string
   views: number
   likes: number
-  lastViewed: string
+  last_viewed: string
   likeRatio?: number
 }
 
+interface ErrorReport {
+  id: string
+  tool_slug: string
+  error_type: string
+  description: string
+  user_agent: string
+  created_at: string
+}
+
+interface ErrorReportsGrouped {
+  toolSlug: string
+  count: number
+  reports: ErrorReport[]
+}
+
 export default function AdminDashboard() {
+  const router = useRouter()
   const [analytics, setAnalytics] = useState<AnalyticsData[]>([])
+  const [errorReports, setErrorReports] = useState<ErrorReportsGrouped[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<"overview" | "most-viewed" | "most-liked" | "least-viewed">("overview")
+  const [activeTab, setActiveTab] = useState<"overview" | "most-viewed" | "most-liked" | "least-viewed" | "error-reports">("overview")
 
   useEffect(() => {
+    // Check authentication
+    const isAuthenticated = localStorage.getItem("admin_authenticated")
+    if (!isAuthenticated) {
+      router.push("/admin")
+      return
+    }
+
     fetchAnalytics()
-  }, [])
+    fetchErrorReports()
+  }, [router])
 
   const fetchAnalytics = async () => {
     try {
@@ -30,6 +56,21 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const fetchErrorReports = async () => {
+    try {
+      const response = await fetch("/api/report-error")
+      const data = await response.json()
+      setErrorReports(data.data || [])
+    } catch (error) {
+      console.error("Error fetching error reports:", error)
+    }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("admin_authenticated")
+    router.push("/admin")
   }
 
   const getFilteredData = () => {
@@ -51,6 +92,7 @@ export default function AdminDashboard() {
   const totalViews = analytics.reduce((sum, t) => sum + t.views, 0)
   const totalLikes = analytics.reduce((sum, t) => sum + t.likes, 0)
   const avgLikeRatio = analytics.length > 0 ? totalLikes / totalViews : 0
+  const totalErrorReports = errorReports.reduce((sum, t) => sum + t.count, 0)
 
   if (loading) {
     return (
@@ -66,9 +108,18 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-dvh bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Dashboard de Analytics</h1>
-          <p className="mt-2 text-muted-foreground">Métricas de uso de herramientas</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Dashboard de Analytics</h1>
+            <p className="mt-2 text-muted-foreground">Métricas de uso de herramientas</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium transition-all hover:bg-muted"
+          >
+            <LogOut className="size-4" />
+            Cerrar sesión
+          </button>
         </div>
 
         {/* Stats Cards */}
@@ -99,12 +150,12 @@ export default function AdminDashboard() {
 
           <div className="rounded-xl border border-border bg-card p-6">
             <div className="flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center rounded-xl bg-green-500/10">
-                <TrendingUp className="size-6 text-green-500" />
+              <div className="flex size-12 items-center justify-center rounded-xl bg-orange-500/10">
+                <AlertTriangle className="size-6 text-orange-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Ratio Likes</p>
-                <p className="text-2xl font-bold">{(avgLikeRatio * 100).toFixed(1)}%</p>
+                <p className="text-sm text-muted-foreground">Reportes Error</p>
+                <p className="text-2xl font-bold">{totalErrorReports.toLocaleString()}</p>
               </div>
             </div>
           </div>
@@ -128,7 +179,8 @@ export default function AdminDashboard() {
             { id: "overview", label: "General" },
             { id: "most-viewed", label: "Más vistas" },
             { id: "most-liked", label: "Más liked" },
-            { id: "least-viewed", label: "Menos vistas" }
+            { id: "least-viewed", label: "Menos vistas" },
+            { id: "error-reports", label: "Reportes de error" }
           ].map(tab => (
             <button
               key={tab.id}
@@ -145,64 +197,107 @@ export default function AdminDashboard() {
         </div>
 
         {/* Table */}
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-border bg-muted/50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold">Herramienta</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold">Vistas</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold">Likes</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold">Ratio</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold">Última vista</th>
-                </tr>
-              </thead>
-              <tbody>
-                {getFilteredData().map((tool) => (
-                  <tr key={tool.slug} className="border-b border-border hover:bg-muted/30">
-                    <td className="px-6 py-4">
-                      <div className="font-medium">{tool.slug}</div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <span className="inline-flex items-center gap-1">
-                        <Users className="size-4 text-muted-foreground" />
-                        {tool.views.toLocaleString()}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <span className="inline-flex items-center gap-1">
-                        <Heart className="size-4 text-red-500" />
-                        {tool.likes.toLocaleString()}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary transition-all"
-                            style={{ width: `${tool.views > 0 ? (tool.likes / tool.views) * 100 : 0}%` }}
-                          />
-                        </div>
-                        <span className="text-sm text-muted-foreground">
-                          {tool.views > 0 ? ((tool.likes / tool.views) * 100).toFixed(1) : 0}%
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right text-sm text-muted-foreground">
-                      {new Date(tool.lastViewed).toLocaleDateString()}
-                    </td>
+        {activeTab === "error-reports" ? (
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b border-border bg-muted/50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">Herramienta</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold">Reportes</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">Último reporte</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {getFilteredData().length === 0 && (
-            <div className="p-12 text-center text-muted-foreground">
-              No hay datos disponibles
+                </thead>
+                <tbody>
+                  {errorReports.map((group) => (
+                    <tr key={group.toolSlug} className="border-b border-border hover:bg-muted/30">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="size-4 text-muted-foreground" />
+                          <span className="font-medium">{group.toolSlug}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <span className="inline-flex items-center gap-1">
+                          <AlertTriangle className="size-4 text-orange-500" />
+                          {group.count}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
+                        {new Date(group.reports[0]?.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          )}
-        </div>
+
+            {errorReports.length === 0 && (
+              <div className="p-12 text-center text-muted-foreground">
+                No hay reportes de error disponibles
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="border-b border-border bg-muted/50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">Herramienta</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold">Vistas</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold">Likes</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold">Ratio</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold">Última vista</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getFilteredData().map((tool) => (
+                    <tr key={tool.slug} className="border-b border-border hover:bg-muted/30">
+                      <td className="px-6 py-4">
+                        <div className="font-medium">{tool.slug}</div>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <span className="inline-flex items-center gap-1">
+                          <Users className="size-4 text-muted-foreground" />
+                          {tool.views.toLocaleString()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <span className="inline-flex items-center gap-1">
+                          <Heart className="size-4 text-red-500" />
+                          {tool.likes.toLocaleString()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-primary transition-all"
+                              style={{ width: `${tool.views > 0 ? (tool.likes / tool.views) * 100 : 0}%` }}
+                            />
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            {tool.views > 0 ? ((tool.likes / tool.views) * 100).toFixed(1) : 0}%
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right text-sm text-muted-foreground">
+                        {new Date(tool.last_viewed).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {getFilteredData().length === 0 && (
+              <div className="p-12 text-center text-muted-foreground">
+                No hay datos disponibles
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

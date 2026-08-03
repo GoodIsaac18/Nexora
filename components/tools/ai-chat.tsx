@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Send, User, Bot, Sparkles, AlertCircle, Trash2, ThumbsUp, ThumbsDown, ExternalLink } from "lucide-react"
+import { Send, User, Bot, Sparkles, AlertCircle, Trash2, ThumbsUp, ThumbsDown, ExternalLink, Paperclip, X } from "lucide-react"
 import { secureInput } from "@/lib/security"
 import { useRouter } from "next/navigation"
 
@@ -14,6 +14,7 @@ interface Message {
   suggestions?: Array<{ id: string; name: string; description: string }>
   fromCache?: boolean
   rating?: "up" | "down"
+  attachments?: Array<{ name: string; type: string; size: number }>
 }
 
 export function AiChat() {
@@ -21,13 +22,15 @@ export function AiChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "¡Hola! Soy tu asistente de IA. Puedo ayudarte a encontrar la herramienta perfecta para tus necesidades. ¿Qué necesitas hacer hoy?"
+      content: "¡Hola! Soy tu asistente de IA completo. Puedo ayudarte con cualquier tarea, analizar documentos (PDF, Word), responder preguntas, y mucho más. ¿En qué puedo ayudarte hoy?"
     }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isCooldown, setIsCooldown] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [attachments, setAttachments] = useState<File[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -39,7 +42,7 @@ export function AiChat() {
   }, [messages])
 
   const handleSend = async () => {
-    if (!input.trim() || isLoading || isCooldown) return
+    if (!input.trim() && attachments.length === 0 || isLoading || isCooldown) return
 
     // Sanitizar input
     const { sanitized, isValid } = secureInput(input, {
@@ -47,26 +50,42 @@ export function AiChat() {
       minLength: 1
     })
 
-    if (!isValid) {
+    if (!isValid && input.trim()) {
       setError("El mensaje contiene caracteres no permitidos o excede el límite de longitud.")
       return
     }
 
-    const userMessage = sanitized
+    const userMessage = sanitized || ""
+    const attachmentData = attachments.map(att => ({
+      name: att.name,
+      type: att.type,
+      size: att.size
+    }))
+    
     setInput("")
+    setAttachments([])
     setError(null)
-    setMessages(prev => [...prev, { role: "user", content: userMessage }])
+    setMessages(prev => [...prev, { 
+      role: "user", 
+      content: userMessage,
+      attachments: attachmentData.length > 0 ? attachmentData : undefined
+    }])
     setIsLoading(true)
     setIsCooldown(true)
 
     try {
+      const formData = new FormData()
+      formData.append("message", userMessage)
+      formData.append("history", JSON.stringify(messages.slice(-5)))
+      
+      // Agregar archivos adjuntos
+      attachments.forEach(file => {
+        formData.append("files", file)
+      })
+
       const response = await fetch("/api/ai/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          message: userMessage,
-          history: messages.slice(-5) // Enviar últimos 5 mensajes para contexto
-        })
+        body: formData
       })
 
       if (!response.ok) {
@@ -103,11 +122,39 @@ export function AiChat() {
     setMessages([
       {
         role: "assistant",
-        content: "¡Hola! Soy tu asistente de IA. Puedo ayudarte a encontrar la herramienta perfecta para tus necesidades. ¿Qué necesitas hacer hoy?"
+        content: "¡Hola! Soy tu asistente de IA completo. Puedo ayudarte con cualquier tarea, analizar documentos (PDF, Word), responder preguntas, y mucho más. ¿En qué puedo ayudarte hoy?"
       }
     ])
     setError(null)
     setIsCooldown(false)
+    setAttachments([])
+  }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    const validFiles = files.filter(file => {
+      const validTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain',
+        'text/markdown'
+      ]
+      const maxSize = 10 * 1024 * 1024 // 10MB
+      return validTypes.includes(file.type) && file.size <= maxSize
+    })
+
+    if (validFiles.length === 0) {
+      setError("Solo se permiten archivos PDF, Word, TXT o Markdown de máximo 10MB")
+      return
+    }
+
+    setAttachments(prev => [...prev, ...validFiles])
+    setError(null)
+  }
+
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index))
   }
 
   const handleRating = (index: number, rating: "up" | "down") => {
@@ -124,14 +171,14 @@ export function AiChat() {
 
   return (
     <div className="flex flex-col h-[70vh] sm:h-[600px]">
-      <div className="flex items-center justify-between border-b border-border p-3 sm:p-4">
+        <div className="flex items-center justify-between border-b border-border p-3 sm:p-4">
         <div className="flex items-center gap-2 sm:gap-3">
           <span className="flex size-8 sm:size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <Sparkles className="size-4 sm:size-5" />
           </span>
           <div>
-            <h3 className="text-sm font-semibold sm:text-base">Asistente IA</h3>
-            <p className="text-xs text-muted-foreground">Encuentra la herramienta perfecta</p>
+            <h3 className="text-sm font-semibold sm:text-base">Asistente IA Completo</h3>
+            <p className="text-xs text-muted-foreground">Analiza documentos, responde preguntas</p>
           </div>
         </div>
         <button
@@ -165,6 +212,17 @@ export function AiChat() {
                 <p className="text-sm sm:text-base">{msg.content}</p>
                 {msg.fromCache && (
                   <p className="text-xs opacity-70 mt-1">⚡ Respuesta en caché</p>
+                )}
+                {msg.attachments && msg.attachments.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {msg.attachments.map((att, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs opacity-75">
+                        <Paperclip className="size-3" />
+                        <span>{att.name}</span>
+                        <span className="opacity-60">({(att.size / 1024).toFixed(1)} KB)</span>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
               
@@ -260,19 +318,55 @@ export function AiChat() {
       </div>
 
       <div className="border-t border-border p-3 sm:p-4">
+        {/* Attachments preview */}
+        {attachments.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {attachments.map((file, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-1.5 text-sm"
+              >
+                <Paperclip className="size-3 text-muted-foreground" />
+                <span className="max-w-[150px] truncate">{file.name}</span>
+                <button
+                  onClick={() => removeAttachment(index)}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <X className="size-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        
         <div className="flex gap-2">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="rounded-xl border border-border bg-background px-3 py-3 text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+            title="Adjuntar archivo (PDF, Word, TXT)"
+          >
+            <Paperclip className="size-4 sm:size-5" />
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept=".pdf,.doc,.docx,.txt,.md"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Escribe lo que necesitas hacer..."
+            placeholder="Escribe lo que necesitas hacer o adjunta un documento..."
             disabled={isLoading || isCooldown}
             className="flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 sm:text-base"
           />
           <button
             onClick={handleSend}
-            disabled={!input.trim() || isLoading || isCooldown}
+            disabled={(!input.trim() && attachments.length === 0) || isLoading || isCooldown}
             className="rounded-xl bg-primary px-4 py-3 text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 disabled:hover:bg-primary"
           >
             <Send className="size-4 sm:size-5" />

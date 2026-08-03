@@ -7,6 +7,7 @@ import { ChevronRight, House, Sparkles, MessageSquare, HelpCircle, Share2 } from
 import { AdSlot } from "@/components/ad-slot"
 import { getTool, getCategory, relatedTools } from "@/lib/tools"
 import { ToolCard } from "@/components/tool-card"
+import { ErrorReportButton } from "@/components/error-report-button"
 import { useRecentTools } from "@/hooks/use-recent-tools"
 
 export function ToolShell({ slug, children }: { slug: string; children: ReactNode }) {
@@ -20,6 +21,12 @@ export function ToolShell({ slug, children }: { slug: string; children: ReactNod
   // Track tool visit
   useEffect(() => {
     addRecentTool(slug)
+    // Track view in analytics
+    fetch("/api/analytics/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, action: "view" })
+    }).catch(error => console.error("Error tracking view:", error))
   }, [slug, addRecentTool])
 
   return (
@@ -167,16 +174,19 @@ export function ToolShell({ slug, children }: { slug: string; children: ReactNod
 
           {/* Share Button */}
           <div className="mt-8 animate-fade-in-up [animation-delay:280ms] lg:mt-12">
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(window.location.href)
-                alert('¡Enlace copiado al portapapeles!')
-              }}
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-border bg-card px-4 py-2 text-sm font-medium transition-all hover:border-primary/30 hover:bg-muted/50 lg:rounded-2xl lg:px-6 lg:py-3 lg:text-base"
-            >
-              <Share2 className="size-4 lg:size-5" />
-              Compartir herramienta
-            </button>
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href)
+                  alert('¡Enlace copiado al portapapeles!')
+                }}
+                className="inline-flex items-center gap-2 rounded-xl border-2 border-border bg-card px-4 py-2 text-sm font-medium transition-all hover:border-primary/30 hover:bg-muted/50 lg:rounded-2xl lg:px-6 lg:py-3 lg:text-base"
+              >
+                <Share2 className="size-4 lg:size-5" />
+                Compartir herramienta
+              </button>
+              <ErrorReportButton toolSlug={slug} toolName={tool.name} />
+            </div>
           </div>
 
           {/* Related Tools */}

@@ -139,7 +139,20 @@ npm start
 
 ## Configuración
 
-El proyecto puede requerir variables de entorno para funcionalidades como publicidad, analítica o integraciones externas. Para una instalación local, copia el archivo de ejemplo de entorno si está disponible y completa los valores necesarios.
+El proyecto puede requerir variables de entorno para funcionalidades como publicidad, analítica o integraciones externas.
+
+Variables recomendadas:
+
+- `SUPABASE_URL`: URL de tu proyecto de Supabase para el backend.
+- `SUPABASE_PUBLISHABLE_KEY`: clave pública para validación y contexto de usuario.
+- `SUPABASE_SECRET_KEY`: clave secreta para las rutas del backend.
+- `SUPABASE_JWKS_URL`: endpoint JWKS para verificación de JWT.
+- `NEXT_PUBLIC_SUPABASE_URL`: URL pública usada por los helpers del navegador.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: clave pública usada por los helpers del navegador.
+- `NEXT_PUBLIC_ADSENSE_CLIENT`: identificador de cliente de AdSense.
+- `NEXT_PUBLIC_ADS_SLOT_HOME_LEADERBOARD`, `NEXT_PUBLIC_ADS_SLOT_HOME_INFEED`, `NEXT_PUBLIC_ADS_SLOT_TOOL_TOP`, `NEXT_PUBLIC_ADS_SLOT_TOOL_SIDEBAR`, `NEXT_PUBLIC_ADS_SLOT_FOOTER`: IDs de slot de anuncios.
+
+Para una instalación local, copia el archivo de ejemplo de entorno si está disponible y completa los valores necesarios.
 
 ## Estructura del proyecto
 

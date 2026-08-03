@@ -9,6 +9,8 @@ export function AdSenseScript() {
 
   useEffect(() => {
     if (!client || typeof document === "undefined") return
+    // Check if script is already loaded by Next.js Script component
+    if (document.querySelector('#adsense-script')) return
     if (document.querySelector('script[data-adsense="true"]')) return
     const s = document.createElement("script")
     s.async = true

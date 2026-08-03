@@ -1,7 +1,6 @@
 import { Analytics } from "@vercel/analytics/next"
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
-import Script from "next/script"
 import { SITE } from "@/lib/tools"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
@@ -87,11 +86,6 @@ export default function RootLayout({
   } catch (e) {}
 })();`
           }}
-        />
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6351511741135891"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
       </head>
       <body className="min-h-dvh font-sans antialiased">

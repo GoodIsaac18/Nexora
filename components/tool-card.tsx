@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ArrowRight, Heart } from "lucide-react"
 import type { Tool } from "@/lib/tools"
@@ -9,6 +9,20 @@ import { cn } from "@/lib/utils"
 export function ToolCard({ tool, className }: { tool: Tool; className?: string }) {
   const [liked, setLiked] = useState(false)
   const [likes, setLikes] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Fetch current likes from analytics
+    fetch(`/api/analytics/track?slug=${tool.slug}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.data && data.data.length > 0) {
+          setLikes(data.data[0].likes || 0)
+        }
+      })
+      .catch(error => console.error("Error fetching likes:", error))
+      .finally(() => setLoading(false))
+  }, [tool.slug])
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -58,7 +72,7 @@ export function ToolCard({ tool, className }: { tool: Tool; className?: string }
           )}
         >
           <Heart className={cn("size-3.5 lg:size-4", liked && "fill-current")} />
-          <span>{likes > 0 ? likes : "Me gusta"}</span>
+          <span>{loading ? "..." : likes > 0 ? likes : "Me gusta"}</span>
         </button>
       )}
       

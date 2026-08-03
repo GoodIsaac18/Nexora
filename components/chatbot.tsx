@@ -15,7 +15,7 @@ export function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "¡Hola! Soy el asistente de Nexora. Puedo ayudarte a encontrar la herramienta adecuada. ¿Qué necesitas hacer? (ej: parafrasear texto, analizar CV, convertir divisas, etc.)"
+      content: "¡Hola! Soy el asistente de Nexora. Estoy aquí para ayudarte a navegar por nuestras herramientas. ¿Qué necesitas hacer? (ej: parafrasear texto, analizar CV, convertir divisas, etc.)"
     }
   ])
   const [input, setInput] = useState("")

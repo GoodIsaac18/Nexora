@@ -1,75 +1,164 @@
-// Sistema simple de analytics usando localStorage para el cliente
-// En producción, esto debería conectarse a una base de datos real
+import { supabase } from "@/lib/supabase"
 
-interface ToolAnalytics {
-  slug: string
-  views: number
-  likes: number
-  lastViewed: string
-}
-
-const ANALYTICS_KEY = 'nexora_analytics'
-
-export function trackToolView(slug: string) {
-  if (typeof window === 'undefined') return
-  
+export async function trackToolView(slug: string) {
   try {
-    const analytics = getAnalytics()
-    const tool = analytics[slug] || { slug, views: 0, likes: 0, lastViewed: '' }
-    tool.views += 1
-    tool.lastViewed = new Date().toISOString()
-    analytics[slug] = tool
-    localStorage.setItem(ANALYTICS_KEY, JSON.stringify(analytics))
+    const supabaseAdmin = supabase
+    const { data: existing, error: selectError } = await supabaseAdmin
+      .from('tools_analytics')
+      .select('views')
+      .eq('slug', slug)
+      .single()
+
+    if (selectError && selectError.code !== 'PGRST116') {
+      console.error('Error checking existing tool view:', selectError)
+      return
+    }
+
+    const { error } = existing
+      ? await supabaseAdmin
+        .from('tools_analytics')
+        .update({ 
+          views: existing.views + 1,
+          last_viewed: new Date().toISOString()
+        })
+        .eq('slug', slug)
+      : await supabaseAdmin
+      .from('tools_analytics')
+      .insert({
+        slug,
+        views: 1,
+        last_viewed: new Date().toISOString()
+      })
+
+    if (error) {
+      console.error('Error tracking tool view:', error)
+      return
+    }
   } catch (e) {
     console.error('Error tracking tool view:', e)
   }
 }
 
-export function trackToolLike(slug: string) {
-  if (typeof window === 'undefined') return
-  
+export async function trackToolLike(slug: string) {
   try {
-    const analytics = getAnalytics()
-    const tool = analytics[slug] || { slug, views: 0, likes: 0, lastViewed: '' }
-    tool.likes += 1
-    analytics[slug] = tool
-    localStorage.setItem(ANALYTICS_KEY, JSON.stringify(analytics))
+    const supabaseAdmin = supabase
+    const { data: existing } = await supabaseAdmin
+      .from('tools_analytics')
+      .select('likes')
+      .eq('slug', slug)
+      .single()
+
+    if (existing) {
+      await supabaseAdmin
+        .from('tools_analytics')
+        .update({ likes: existing.likes + 1 })
+        .eq('slug', slug)
+    } else {
+      await supabaseAdmin
+        .from('tools_analytics')
+        .insert({
+          slug,
+          views: 0,
+          likes: 1,
+          last_viewed: new Date().toISOString()
+        })
+    }
   } catch (e) {
     console.error('Error tracking tool like:', e)
   }
 }
 
-export function getAnalytics(): Record<string, ToolAnalytics> {
-  if (typeof window === 'undefined') return {}
-  
+export async function getAnalytics(): Promise<Record<string, { slug: string; views: number; likes: number; lastViewed: string }>> {
   try {
-    const data = localStorage.getItem(ANALYTICS_KEY)
-    return data ? JSON.parse(data) : {}
+    const supabaseAdmin = supabase
+    const { data, error } = await supabaseAdmin
+      .from('tools_analytics')
+      .select('*')
+
+    if (error) {
+      console.error('Error getting analytics:', error)
+      return {}
+    }
+
+    return (data || []).reduce((acc, item: any) => {
+      acc[item.slug] = {
+        slug: item.slug,
+        views: item.views,
+        likes: item.likes,
+        lastViewed: item.last_viewed
+      }
+      return acc
+    }, {} as Record<string, { slug: string; views: number; likes: number; lastViewed: string }>)
   } catch (e) {
     console.error('Error getting analytics:', e)
     return {}
   }
 }
 
-export function getMostViewedTools(limit = 5): ToolAnalytics[] {
-  const analytics = getAnalytics()
-  return Object.values(analytics)
-    .sort((a, b) => b.views - a.views)
-    .slice(0, limit)
+export async function getMostViewedTools(limit = 5) {
+  try {
+    const supabaseAdmin = supabase
+    const { data, error } = await supabaseAdmin
+      .from('tools_analytics')
+      .select('*')
+      .order('views', { ascending: false })
+      .limit(limit)
+
+    if (error) {
+      console.error('Error getting most viewed tools:', error)
+      return []
+    }
+
+    return data || []
+  } catch (e) {
+    console.error('Error getting most viewed tools:', e)
+    return []
+  }
 }
 
-export function getMostLikedTools(limit = 5): ToolAnalytics[] {
-  const analytics = getAnalytics()
-  return Object.values(analytics)
-    .map(t => ({ ...t, likeRatio: t.views > 0 ? t.likes / t.views : 0 }))
-    .sort((a, b) => b.likeRatio - a.likeRatio)
-    .slice(0, limit)
+export async function getMostLikedTools(limit = 5) {
+  try {
+    const supabaseAdmin = supabase
+    const { data, error } = await supabaseAdmin
+      .from('tools_analytics')
+      .select('*')
+      .order('views', { ascending: false }) // Get all first to calculate ratio
+
+    if (error) {
+      console.error('Error getting most liked tools:', error)
+      return []
+    }
+
+    const result = (data || [])
+      .map((t: any) => ({ ...t, likeRatio: t.views > 0 ? t.likes / t.views : 0 }))
+      .sort((a: any, b: any) => b.likeRatio - a.likeRatio)
+      .slice(0, limit)
+
+    return result
+  } catch (e) {
+    console.error('Error getting most liked tools:', e)
+    return []
+  }
 }
 
-export function getLeastViewedTools(limit = 5): ToolAnalytics[] {
-  const analytics = getAnalytics()
-  return Object.values(analytics)
-    .filter(t => t.views > 0)
-    .sort((a, b) => a.views - b.views)
-    .slice(0, limit)
+export async function getLeastViewedTools(limit = 5) {
+  try {
+    const supabaseAdmin = supabase
+    const { data, error } = await supabaseAdmin
+      .from('tools_analytics')
+      .select('*')
+      .gt('views', 0)
+      .order('views', { ascending: true })
+      .limit(limit)
+
+    if (error) {
+      console.error('Error getting least viewed tools:', error)
+      return []
+    }
+
+    return data || []
+  } catch (e) {
+    console.error('Error getting least viewed tools:', e)
+    return []
+  }
 }

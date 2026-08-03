@@ -1,41 +1,69 @@
 import { NextResponse } from "next/server"
+import { supabase } from "@/lib/supabase"
 
-// En producción, esto debería guardar en una base de datos real
-// Por ahora usamos un sistema simple en memoria para demostración
-const errorReports = new Map<string, Array<{
-  id: string
-  toolSlug: string
-  errorType: string
-  description: string
-  timestamp: string
-  userAgent?: string
-}>()
+// Input validation to prevent injection
+function validateSlug(slug: string): boolean {
+  const validPattern = /^[a-z0-9-_]+$/i
+  return validPattern.test(slug) && slug.length <= 100
+}
+
+function validateErrorType(errorType: string): boolean {
+  const validTypes = ["not-working", "slow", "ui-issue", "wrong-result", "other"]
+  return validTypes.includes(errorType)
+}
+
+function sanitizeString(input: string, maxLength: number = 1000): string {
+  // Remove potentially dangerous characters and limit length
+  return input
+    .replace(/[<>]/g, '') // Remove angle brackets
+    .substring(0, maxLength)
+    .trim()
+}
 
 export async function POST(request: Request) {
   try {
     const { toolSlug, errorType, description, userAgent } = await request.json()
 
+    // Validate inputs
     if (!toolSlug || !errorType || !description) {
       return NextResponse.json({ error: "toolSlug, errorType, and description are required" }, { status: 400 })
     }
 
-    const report = {
-      id: Date.now().toString(),
-      toolSlug,
-      errorType,
-      description,
-      timestamp: new Date().toISOString(),
-      userAgent
+    if (!validateSlug(toolSlug)) {
+      return NextResponse.json({ error: "Invalid toolSlug format" }, { status: 400 })
     }
 
-    const toolReports = errorReports.get(toolSlug) || []
-    toolReports.push(report)
-    errorReports.set(toolSlug, toolReports)
+    if (!validateErrorType(errorType)) {
+      return NextResponse.json({ error: "Invalid errorType" }, { status: 400 })
+    }
 
-    return NextResponse.json({ success: true, report })
+    const sanitizedDescription = sanitizeString(description, 2000)
+    const sanitizedUserAgent = userAgent ? sanitizeString(userAgent, 500) : null
+
+    if (sanitizedDescription.length < 10) {
+      return NextResponse.json({ error: "Description must be at least 10 characters" }, { status: 400 })
+    }
+
+    const { data, error } = await supabase
+      .from('error_reports')
+      .insert({
+        tool_slug: toolSlug,
+        error_type: errorType,
+        description: sanitizedDescription,
+        user_agent: sanitizedUserAgent
+      })
+      .select()
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    return NextResponse.json({ success: true, report: data })
   } catch (error) {
     console.error("Error reporting issue:", error)
-    return NextResponse.json({ error: "Error reporting issue" }, { status: 500 })
+    const message = error instanceof Error ? error.message : "Error reporting issue"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
 
@@ -45,20 +73,48 @@ export async function GET(request: Request) {
     const toolSlug = searchParams.get("toolSlug")
 
     if (toolSlug) {
-      const reports = errorReports.get(toolSlug) || []
-      return NextResponse.json({ reports })
+      const { data, error } = await supabase
+        .from('error_reports')
+        .select('*')
+        .eq('tool_slug', toolSlug)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        throw error
+      }
+
+      return NextResponse.json({ reports: data || [] })
     }
 
     // Return all reports grouped by tool
-    const allReports = Array.from(errorReports.entries()).map(([slug, reports]) => ({
+    const { data: allReports, error } = await supabase
+      .from('error_reports')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      throw error
+    }
+
+    // Group by tool slug
+    const grouped = allReports?.reduce((acc: Record<string, any[]>, report) => {
+      if (!acc[report.tool_slug]) {
+        acc[report.tool_slug] = []
+      }
+      acc[report.tool_slug].push(report)
+      return acc
+    }, {}) || {}
+
+    const result = Object.entries(grouped).map(([slug, reports]) => ({
       toolSlug: slug,
       count: reports.length,
-      reports: reports.slice(-10) // Last 10 reports
+      reports: reports.slice(0, 10) // Last 10 reports
     }))
 
-    return NextResponse.json({ data: allReports })
+    return NextResponse.json({ data: result })
   } catch (error) {
     console.error("Error getting error reports:", error)
-    return NextResponse.json({ error: "Error getting error reports" }, { status: 500 })
+    const message = error instanceof Error ? error.message : "Error getting error reports"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
