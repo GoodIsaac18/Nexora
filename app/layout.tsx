@@ -73,6 +73,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <AdSenseScript />
         <script
           id="theme-script"
           dangerouslySetInnerHTML={{
@@ -94,7 +95,6 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <SiteFooter />
         </div>
-        <AdSenseScript />
         {process.env.NODE_ENV === "production" && <Analytics />}
         <Chatbot />
         <CookieBanner />
