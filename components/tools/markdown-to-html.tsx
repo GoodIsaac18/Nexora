@@ -96,9 +96,9 @@ export function MarkdownToHtml() {
   const output = useMemo(() => mdToHtml(input), [input])
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:gap-4">
       <Panel>
-        <div className="mb-2 flex items-center justify-between">
+        <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <FieldLabel htmlFor="md-input">Markdown</FieldLabel>
           <div className="flex gap-2">
             <ActionButton variant="outline" onClick={() => setInput(SAMPLE)}>
@@ -115,24 +115,25 @@ export function MarkdownToHtml() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type Markdown here…"
           spellCheck={false}
-          className={textAreaClass("min-h-[360px]")}
+          className={textAreaClass("min-h-[250px] lg:min-h-[360px]")}
         />
       </Panel>
 
       <div className="flex flex-col gap-4">
         <Panel>
-          <FieldLabel>Preview</FieldLabel>
+          <FieldLabel htmlFor="preview">Preview</FieldLabel>
           <div
-            className="prose-tool scroll-thin min-h-[150px] overflow-auto rounded-xl border border-border bg-background p-4"
+            id="preview"
+            className="prose-tool scroll-thin min-h-[180px] lg:min-h-[150px] overflow-auto rounded-xl border border-border bg-background p-4"
             dangerouslySetInnerHTML={{ __html: output }}
           />
         </Panel>
         <Panel>
-          <div className="mb-2 flex items-center justify-between">
-            <FieldLabel>HTML output</FieldLabel>
+          <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <FieldLabel htmlFor="html-output">HTML output</FieldLabel>
             <CopyButton value={output} />
           </div>
-          <pre className="scroll-thin max-h-[220px] overflow-auto rounded-xl border border-border bg-background p-3 font-mono text-xs leading-relaxed">
+          <pre className="scroll-thin max-h-[180px] lg:max-h-[220px] overflow-auto rounded-xl border border-border bg-background p-3 font-mono text-xs leading-relaxed">
             {output}
           </pre>
         </Panel>

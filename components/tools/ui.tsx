@@ -23,8 +23,8 @@ export function FieldLabel({ htmlFor, children }: { htmlFor: string; children: R
 export const inputClass = () =>
   "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-all placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10 hover:border-primary/30 lg:rounded-2xl lg:border-2 lg:bg-background/50 lg:backdrop-blur-sm lg:px-5 lg:py-4 lg:text-base lg:focus:bg-background"
 
-export const textAreaClass = () =>
-  "w-full min-h-[200px] rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-all placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10 resize-y hover:border-primary/30 lg:rounded-2xl lg:border-2 lg:bg-background/50 lg:backdrop-blur-sm lg:px-5 lg:py-4 lg:text-base"
+export const textAreaClass = (extraClasses = "") =>
+  `w-full min-h-[200px] rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-all placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10 resize-y hover:border-primary/30 lg:rounded-2xl lg:border-2 lg:bg-background/50 lg:backdrop-blur-sm lg:px-5 lg:py-4 lg:text-base ${extraClasses}`
 
 export function ActionButton({
   children,

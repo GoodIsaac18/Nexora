@@ -153,17 +153,17 @@ export function ToolBrowser() {
 
       {/* Category filters */}
       <div className="mt-4 flex flex-wrap gap-2 lg:mt-6 lg:gap-3">
-        <FilterChip active={activeCategory === null} onClick={() => setActiveCategory(null)}>
+        <Link href="/" className="rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-300 lg:border-2 lg:px-6 lg:py-2.5 lg:text-base lg:font-semibold border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/30">
           All
-        </FilterChip>
+        </Link>
         {categories.map((c) => (
-          <FilterChip
+          <Link
             key={c.slug}
-            active={activeCategory === c.slug}
-            onClick={() => setActiveCategory(activeCategory === c.slug ? null : c.slug)}
+            href={`/category/${c.slug}`}
+            className="rounded-full border border-border bg-background text-muted-foreground px-4 py-1.5 text-sm font-medium transition-all duration-300 hover:border-primary/40 hover:text-foreground hover:scale-105 active:scale-95 lg:border-2 lg:px-6 lg:py-2.5 lg:text-base lg:font-semibold lg:bg-background/50 lg:backdrop-blur-sm lg:hover:border-primary/50 lg:hover:bg-card"
           >
             {c.name}
-          </FilterChip>
+          </Link>
         ))}
       </div>
 
@@ -182,12 +182,18 @@ export function ToolBrowser() {
                 {index === 1 && (
                   <AdSlot placement="home-infeed" className="mb-8 lg:mb-10" />
                 )}
-                <div className="mb-4 flex items-baseline justify-between gap-4 lg:mb-6">
+                <div className="mb-4 flex flex-col gap-3 lg:mb-6 lg:flex-row lg:items-baseline lg:justify-between lg:gap-4">
                   <div>
                     <h2 className="text-xl font-semibold tracking-tight lg:text-3xl lg:font-bold">{category.name}</h2>
                     <p className="text-sm text-muted-foreground lg:mt-1 lg:text-lg">{category.description}</p>
                   </div>
                   <div className="flex items-center gap-3">
+                    <Link
+                      href={`/category/${category.slug}`}
+                      className="inline-flex rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-primary/40 hover:text-primary lg:hidden"
+                    >
+                      View all
+                    </Link>
                     <Link
                       href={`/category/${category.slug}`}
                       className="hidden rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-primary/40 hover:text-primary lg:inline-flex"
