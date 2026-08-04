@@ -248,9 +248,9 @@ export function ToolBrowser() {
                             className="flex-shrink-0 w-[85vw] sm:w-[80vw] md:w-[45vw] lg:w-[30vw] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
                             style={{
                               scrollSnapAlign: isMobile ? 'center' : 'start',
-                              opacity: shouldFade ? 0.3 : 1,
-                              transform: shouldFade ? 'scale(0.95)' : 'scale(1)',
-                              willChange: 'opacity, transform'
+                              opacity: isMobile && shouldFade ? 0.3 : 1,
+                              transform: isMobile && shouldFade ? 'scale(0.95)' : 'scale(1)',
+                              willChange: isMobile ? 'opacity, transform' : 'auto'
                             }}
                           >
                             <ToolCard tool={t} />
