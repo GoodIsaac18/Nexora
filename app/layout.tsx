@@ -4,7 +4,6 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { SITE } from "@/lib/tools"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { AdSenseScript } from "@/components/adsense-loader"
 import { Chatbot } from "@/components/chatbot"
 import { CookieBanner } from "@/components/cookie-banner"
 import "./globals.css"
@@ -73,7 +72,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <AdSenseScript />
+        <meta name="google-adsense-account" content="ca-pub-6351511741135891" />
         <script
           id="theme-script"
           dangerouslySetInnerHTML={{
