@@ -8,8 +8,11 @@ const GOOGLE_AI_API_URL = "https://generativelanguage.googleapis.com/v1beta/mode
 let lastRequestTime = 0
 const RATE_LIMIT_MS = 2000 // 2 segundos para el chatbot
 
-// Crear contexto de todas las herramientas
-const toolsContext = tools.map(tool => ({
+// Filtrar solo herramientas disponibles
+const availableTools = tools.filter(t => t.available)
+
+// Crear contexto de todas las herramientas disponibles
+const toolsContext = availableTools.map(tool => ({
   slug: tool.slug,
   name: tool.name,
   title: tool.title,
@@ -135,12 +138,15 @@ Ahora responde al mensaje del usuario: ${sanitized}`
     const toolMatch = generatedText.match(/\[TOOL:([a-z0-9-]+)\]/i)
     const toolSuggestion = toolMatch ? toolMatch[1] : null
     
+    // Verificar que la herramienta sugerida existe y está disponible
+    const validToolSuggestion = toolSuggestion && availableTools.some(t => t.slug === toolSuggestion) ? toolSuggestion : null
+    
     // Limpiar el texto de respuesta eliminando el marcador de herramienta
     const cleanResponse = generatedText.replace(/\[TOOL:[a-z0-9-]+\]/i, "").trim()
     
     return NextResponse.json({ 
       response: cleanResponse,
-      toolSuggestion 
+      toolSuggestion: validToolSuggestion 
     })
   } catch (error) {
     console.error("Error in chatbot:", error)

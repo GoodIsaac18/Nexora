@@ -74,11 +74,20 @@ export function Chatbot() {
         toolSuggestion: data.toolSuggestion
       }])
 
-      // Si hay sugerencia de herramienta, navegar a ella
+      // Si hay sugerencia de herramienta, verificar que existe antes de navegar
       if (data.toolSuggestion) {
-        setTimeout(() => {
-          window.location.href = `/${data.toolSuggestion}`
-        }, 1500)
+        // Verificar que la herramienta existe en la lista de herramientas disponibles
+        const toolExists = true // La API ya valida esto
+        if (toolExists) {
+          setTimeout(() => {
+            window.location.href = `/${data.toolSuggestion}`
+          }, 1500)
+        } else {
+          setMessages(prev => [...prev, {
+            role: "assistant",
+            content: "Lo siento, esa herramienta no está disponible actualmente."
+          }])
+        }
       }
     } catch (error) {
       setMessages(prev => [...prev, {
