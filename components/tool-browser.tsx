@@ -189,18 +189,6 @@ export function ToolBrowser() {
                     <p className="text-sm text-muted-foreground lg:mt-1 lg:text-lg">{category.description}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Link
-                      href={`/category/${category.slug}`}
-                      className="rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-primary/40 hover:text-primary lg:hidden"
-                    >
-                      View all
-                    </Link>
-                    <Link
-                      href={`/category/${category.slug}`}
-                      className="hidden rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-primary/40 hover:text-primary lg:inline-flex"
-                    >
-                      View category
-                    </Link>
                     <span className="shrink-0 text-sm text-muted-foreground lg:rounded-full lg:bg-primary/10 lg:px-4 lg:py-2 lg:font-semibold lg:text-primary">
                       {items.length}
                     </span>
