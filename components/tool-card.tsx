@@ -10,19 +10,35 @@ export function ToolCard({ tool, className }: { tool: Tool; className?: string }
   const [liked, setLiked] = useState(false)
   const [likes, setLikes] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [apiError, setApiError] = useState(false)
 
   useEffect(() => {
+    // Skip API calls if there was a previous error
+    if (apiError) {
+      setLoading(false)
+      return
+    }
+
     // Fetch current likes from analytics
     fetch(`/api/analytics/track?slug=${tool.slug}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`)
+        }
+        return res.json()
+      })
       .then(data => {
         if (data.data && data.data.length > 0) {
           setLikes(data.data[0].likes || 0)
         }
       })
-      .catch(error => console.error("Error fetching likes:", error))
+      .catch(error => {
+        console.error("Error fetching likes:", error)
+        setLikes(0)
+        setApiError(true) // Disable further API calls on error
+      })
       .finally(() => setLoading(false))
-  }, [tool.slug])
+  }, [tool.slug, apiError])
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault()
