@@ -106,7 +106,7 @@ export function SvgPngConverter() {
             <div className="mt-4 flex justify-center">
               <img
                 src={preview}
-                alt="SVG Preview"
+                alt="Vista previa del archivo SVG original"
                 className="max-h-64 w-auto rounded-lg border border-border"
               />
             </div>
@@ -155,7 +155,7 @@ export function SvgPngConverter() {
           <div className="mt-4 flex justify-center">
             <img
               src={pngPreview}
-              alt="PNG Preview"
+              alt="Vista previa del archivo PNG convertido"
               className="max-h-64 w-auto rounded-lg border border-border"
             />
           </div>

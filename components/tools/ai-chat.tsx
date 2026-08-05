@@ -15,6 +15,7 @@ interface Message {
   fromCache?: boolean
   rating?: "up" | "down"
   attachments?: Array<{ name: string; type: string; size: number }>
+  clarificationQuestion?: string
 }
 
 export function AiChat() {
@@ -101,7 +102,8 @@ export function AiChat() {
         toolUrl: data.toolUrl,
         confidence: data.confidence,
         suggestions: data.suggestions,
-        fromCache: data.fromCache
+        fromCache: data.fromCache,
+        clarificationQuestion: data.clarificationQuestion
       }])
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al procesar el mensaje. Intenta de nuevo.")

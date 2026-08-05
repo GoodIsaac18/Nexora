@@ -36,6 +36,11 @@ export function getFailedSearchMetrics() {
 
 export async function POST(request: Request) {
   try {
+    // Check if API key is configured
+    if (!GOOGLE_AI_API_KEY) {
+      return NextResponse.json({ error: "Google AI API key not configured. Please add GOOGLE_AI_API_KEY to your .env.local file." }, { status: 401 })
+    }
+
     const formData = await request.formData()
     const message = formData.get("message") as string
     const historyJson = formData.get("history") as string
@@ -123,23 +128,65 @@ export async function POST(request: Request) {
 
     // System prompt with file context if present
     const systemPrompt = fileContext 
-      ? `Eres un asistente de IA completo. Puedes analizar documentos y responder preguntas sobre ellos.
-        
+      ? `Eres un asistente de IA experto en análisis de documentos y comprensión de contexto. Tu objetivo es entender profundamente lo que el usuario necesita.
+
 Contexto de archivos:${fileContext}
 
 Consulta del usuario: ${sanitized}
 
-Responde de manera útil y completa. Si el usuario pregunta sobre herramientas, recomienda las más adecuadas.`
-      : `Eres un asistente que recomienda herramientas. Analiza la consulta del usuario y devuelve SOLO un JSON con esta estructura:
-{"tool_id": "slug-de-la-herramienta", "confidence": 0.0-1.0}
+INSTRUCCIONES DE ANÁLISIS DE CONTEXTO:
+1. Lee y analiza TODO el contenido del documento adjunto antes de responder.
+2. Identifica el tema principal, los puntos clave y el propósito del documento.
+3. Considera el contexto de la pregunta del usuario dentro del documento completo.
+4. Si la pregunta es ambigua o podría tener múltiples interpretaciones, HAZ PREGUNTAS CLARIFICADORAS específicas.
+5. Si el usuario pregunta sobre herramientas específicas, recomienda las más adecuadas basándote en el contexto del documento.
+6. Si no estás seguro de la respuesta, admítelo explícitamente y pide más información.
+7. Proporciona respuestas detalladas y completas, citando partes relevantes del documento cuando sea apropiado.
+8. Mantén el contexto de la conversación anterior para entender mejor las necesidades del usuario.
+
+Historial de conversación reciente:
+${history.length > 0 ? JSON.stringify(history.slice(-5)) : "Ninguno"}
+
+Responde en español de manera clara y útil.`
+      : `Eres un asistente inteligente experto en entender la intención y contexto de los usuarios para recomendar herramientas adecuadas.
+
+INSTRUCCIONES DE ANÁLISIS DE CONTEXTO:
+1. Analiza la consulta del usuario MUY cuidadosamente para entender:
+   - La INTENCIÓN principal (qué quiere lograr)
+   - El CONTEXTO específico (para qué lo necesita, situación particular)
+   - Los DETALLES implícitos (información no explícita pero relevante)
+   - El NIVEL de experiencia del usuario (técnico vs principiante)
+
+2. Considera el HISTORIAL DE CONVERSACIÓN para mantener el contexto:
+   - Si el usuario ha preguntado cosas relacionadas antes, usa esa información
+   - Si está refinando una búsqueda anterior, adapta tu respuesta
+   - Si es una nueva conversación, trata cada consulta de forma independiente pero con contexto
+
+3. Si la consulta es AMBIGUA o tiene múltiples interpretaciones:
+   - HAZ PREGUNTAS CLARIFICADORAS específicas y relevantes
+   - No asumas una interpretación sin confirmar
+   - Ofrece opciones cuando sea apropiado
+
+4. Si la consulta no coincide claramente con ninguna herramienta:
+   - Busca herramientas relacionadas por funcionalidad
+   - Considera sinónimos, variaciones de lenguaje y diferentes contextos
+   - Devuelve sugerencias relevantes en lugar de null
+
+5. Evalúa la CONFIDENCE de tu recomendación:
+   - > 0.8: Muy seguro de que es la herramienta correcta
+   - 0.5-0.8: Moderadamente seguro, puede incluir pregunta de clarificación
+   - < 0.5: Poco seguro, DEBE incluir pregunta de clarificación
 
 Herramientas disponibles:
 ${toolDescriptions}
 
-Si la consulta no coincide con ninguna herramienta, devuelve:
-{"tool_id": null, "confidence": 0.0}
+FORMATO DE RESPUESTA JSON:
+{"tool_id": "slug-de-la-herramienta", "confidence": 0.0-1.0, "clarification_question": "opcional: pregunta específica para clarificar si no estás seguro"}
 
-Consulta: ${sanitized}`
+Consulta del usuario: ${sanitized}
+
+Historial de conversación reciente:
+${history.length > 0 ? JSON.stringify(history.slice(-5)) : "Ninguno"}`
 
     const response = await fetch(`${GOOGLE_AI_API_URL}?key=${GOOGLE_AI_API_KEY}`, {
       method: "POST",
@@ -189,11 +236,13 @@ Consulta: ${sanitized}`
     // Parse JSON response for tool recommendations
     let toolId: string | null = null
     let confidence = 0
+    let clarificationQuestion: string | null = null
     
     try {
       const parsed = JSON.parse(generatedText.trim())
       toolId = parsed.tool_id
       confidence = parsed.confidence || 0
+      clarificationQuestion = parsed.clarification_question || null
     } catch {
       // Fallback: try to extract tool from text
       const toolMatch = tools.find(t => 
@@ -228,15 +277,27 @@ Consulta: ${sanitized}`
       }))
       
       return NextResponse.json({ 
-        response: "No estoy seguro de qué herramienta necesitas. Aquí tienes algunas opciones populares:",
+        response: clarificationQuestion || "No estoy seguro de qué herramienta necesitas. Aquí tienes algunas opciones populares:",
         suggestions,
         toolId: null,
-        confidence: 0
+        confidence: 0,
+        clarificationQuestion
       })
     }
 
     const tool = tools.find(t => t.slug === toolId)
     if (tool) {
+      // If confidence is low, include clarification question
+      if (confidence < 0.7 && clarificationQuestion) {
+        return NextResponse.json({ 
+          response: `${clarificationQuestion}\n\nBasándome en lo que entiendo, te recomiendo: ${tool.name}. ${tool.description}`,
+          toolId,
+          confidence,
+          toolUrl: `/${toolId}`,
+          clarificationQuestion
+        })
+      }
+      
       return NextResponse.json({ 
         response: `Te recomiendo usar: ${tool.name}. ${tool.description}`,
         toolId,

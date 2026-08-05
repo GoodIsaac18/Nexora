@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Briefcase, CheckCircle, AlertTriangle, XCircle, FileText, Search, Award, GraduationCap, AlertCircle } from "lucide-react"
+import { Briefcase, CheckCircle, AlertTriangle, XCircle, FileText, Search, Award, GraduationCap, AlertCircle, Upload, Loader2 } from "lucide-react"
 import { ActionButton, FieldLabel, Panel, textAreaClass } from "@/components/tools/ui"
 import { secureInput } from "@/lib/security"
 
@@ -10,6 +10,8 @@ export function AtsResumeAnalyzer() {
   const [jobDescription, setJobDescription] = useState("")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [isCooldown, setIsCooldown] = useState(false)
+  const [isExtracting, setIsExtracting] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [result, setResult] = useState<{
     score: number
     issues: { type: "error" | "warning" | "success"; message: string }[]
@@ -18,6 +20,52 @@ export function AtsResumeAnalyzer() {
     sections: { name: string; present: boolean }[]
   } | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const validTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ]
+
+    if (!validTypes.includes(file.type)) {
+      setError('Solo se permiten archivos PDF y Word (.doc, .docx)')
+      return
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError('El archivo no puede exceder 10MB')
+      return
+    }
+
+    setUploadedFile(file)
+    setIsExtracting(true)
+    setError(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/document/extract', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Error al extraer texto del archivo')
+      }
+
+      const data = await response.json()
+      setResumeText(data.text)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al procesar el archivo')
+    } finally {
+      setIsExtracting(false)
+    }
+  }
 
   const analyzeResume = async () => {
     if (!resumeText.trim() || isAnalyzing || isCooldown) return
@@ -131,12 +179,46 @@ ${resumeText}${jobDescPart}`
 
         <div className="space-y-4">
           <div>
+            <FieldLabel htmlFor="file-upload">Sube tu CV (PDF o Word)</FieldLabel>
+            <div className="mt-2">
+              <input
+                type="file"
+                id="file-upload"
+                onChange={handleFileUpload}
+                accept=".pdf,.doc,.docx"
+                className="hidden"
+              />
+              <label
+                htmlFor="file-upload"
+                className="flex items-center justify-center gap-2 w-full h-24 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary/50 transition-colors"
+              >
+                {isExtracting ? (
+                  <>
+                    <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Extrayendo texto...</span>
+                  </>
+                ) : uploadedFile ? (
+                  <>
+                    <FileText className="size-5 text-primary" />
+                    <span className="text-sm font-medium">{uploadedFile.name}</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="size-5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Haz clic para subir PDF o Word</span>
+                  </>
+                )}
+              </label>
+            </div>
+          </div>
+
+          <div>
             <FieldLabel htmlFor="resume-text">Contenido de tu CV</FieldLabel>
             <textarea
               id="resume-text"
               value={resumeText}
               onChange={(e) => setResumeText(e.target.value)}
-              placeholder="Pega aquí el contenido completo de tu CV..."
+              placeholder="Pega aquí el contenido completo de tu CV o sube un archivo arriba..."
               className={textAreaClass()}
               rows={8}
             />
@@ -177,6 +259,7 @@ ${resumeText}${jobDescPart}`
                 setResult(null)
                 setError(null)
                 setIsCooldown(false)
+                setUploadedFile(null)
               }}
               className="inline-flex h-11 w-full sm:w-auto items-center justify-center rounded-xl border border-border bg-background px-6 text-sm font-medium transition-colors hover:bg-muted"
             >

@@ -133,7 +133,7 @@ export function ImageResizer() {
             <div className="mt-4 flex justify-center">
               <img
                 src={preview}
-                alt="Original"
+                alt="Imagen original antes de redimensionar"
                 className="max-h-64 w-auto rounded-lg border border-border"
               />
             </div>
@@ -206,7 +206,7 @@ export function ImageResizer() {
           <div className="mt-4 flex justify-center">
             <img
               src={resizedPreview}
-              alt="Resized"
+              alt="Imagen redimensionada resultado"
               className="max-h-64 w-auto rounded-lg border border-border"
             />
           </div>

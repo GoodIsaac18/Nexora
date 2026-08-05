@@ -30,6 +30,11 @@ const FORBIDDEN_TOPICS = [
 
 export async function POST(request: Request) {
   try {
+    // Check if API key is configured
+    if (!GOOGLE_AI_API_KEY) {
+      return NextResponse.json({ error: "Google AI API key not configured. Please add GOOGLE_AI_API_KEY to your .env.local file." }, { status: 401 })
+    }
+
     const { message } = await request.json()
 
     if (!message || typeof message !== "string") {

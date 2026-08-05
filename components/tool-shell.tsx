@@ -198,7 +198,13 @@ export function ToolShell({ slug, children }: { slug: string; children: ReactNod
               <div className="grid gap-4 sm:grid-cols-2 lg:gap-6 lg:grid-cols-3">
                 {related.map((t, i) => (
                   <div key={t.slug} style={{ animationDelay: `${i * 100}ms` }}>
-                    <ToolCard tool={t} />
+                    <ToolCard 
+                      slug={t.slug}
+                      name={t.name}
+                      description={t.description}
+                      iconName={t.iconName || 'FileText'}
+                      available={t.available}
+                    />
                   </div>
                 ))}
               </div>

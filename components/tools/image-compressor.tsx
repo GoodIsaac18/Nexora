@@ -132,7 +132,7 @@ export function ImageCompressor() {
             <div className="mt-4 flex justify-center">
               <img
                 src={preview}
-                alt="Original"
+                alt="Imagen original antes de comprimir"
                 className="max-h-64 w-auto rounded-lg border border-border"
               />
             </div>
@@ -192,7 +192,7 @@ export function ImageCompressor() {
           <div className="mt-4 flex justify-center">
             <img
               src={compressedPreview}
-              alt="Compressed"
+              alt="Imagen comprimida resultado"
               className="max-h-64 w-auto rounded-lg border border-border"
             />
           </div>

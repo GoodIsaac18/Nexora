@@ -241,7 +241,13 @@ export function ToolBrowser() {
                               willChange: isMobile ? 'opacity, transform' : 'auto'
                             }}
                           >
-                            <ToolCard tool={t} />
+                            <ToolCard 
+                              slug={t.slug}
+                              name={t.name}
+                              description={t.description}
+                              iconName={t.iconName || 'FileText'}
+                              available={t.available}
+                            />
                           </div>
                         )
                       })}

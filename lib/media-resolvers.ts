@@ -1,9 +1,7 @@
-import { Innertube } from "youtubei.js"
 import type { MediaDownloadOption, MediaResolveResult, MediaPlatform } from "@/lib/media-types"
 import {
   detectMediaPlatform,
   extractTweetPath,
-  extractYoutubeVideoId,
 } from "@/lib/media-platform"
 
 async function resolveTikTok(url: string): Promise<MediaResolveResult> {
@@ -115,66 +113,7 @@ async function resolveTikTok(url: string): Promise<MediaResolveResult> {
 }
 
 async function resolveYoutube(url: string): Promise<MediaResolveResult> {
-  const id = extractYoutubeVideoId(url)
-  if (!id) throw new Error("URL de YouTube no válida.")
-
-  const yt = await Innertube.create()
-  const info = await yt.getInfo(id)
-  const title = info.basic_info.title ?? "YouTube video"
-  const thumbnail = info.basic_info.thumbnail?.[0]?.url
-  const options: MediaDownloadOption[] = []
-
-  const combined = info.chooseFormat({ type: "video+audio", quality: "best" })
-  if (combined?.url) {
-    options.push({
-      label: "Mejor calidad (video + audio)",
-      url: combined.url,
-      ext: combined.mime_type?.includes("webm") ? "webm" : "mp4",
-      kind: "video",
-    })
-  }
-
-  const streaming = info.streaming_data
-  if (streaming?.adaptive_formats) {
-    const videos = streaming.adaptive_formats
-      .filter((f) => f.has_video && f.url)
-      .slice(0, 4)
-    for (const f of videos) {
-      options.push({
-        label: `Video ${f.quality_label ?? f.quality ?? "adaptativo"}`,
-        url: f.url!,
-        ext: f.mime_type?.includes("webm") ? "webm" : "mp4",
-        kind: "video",
-      })
-    }
-    const audio = streaming.adaptive_formats.find((f) => f.has_audio && !f.has_video && f.url)
-    if (audio?.url) {
-      options.push({
-        label: "Solo audio",
-        url: audio.url,
-        ext: audio.mime_type?.includes("mp4") ? "m4a" : "webm",
-        kind: "audio",
-      })
-    }
-  }
-
-  if (options.length === 0) {
-    throw new Error(
-      "YouTube no expuso enlaces directos para este video. Prueba otro enlace o usa el convertidor con un archivo local.",
-    )
-  }
-
-  const unique = options.filter(
-    (o, i, arr) => arr.findIndex((x) => x.url === o.url) === i,
-  )
-
-  return {
-    platform: "youtube",
-    title,
-    thumbnail,
-    options: unique.slice(0, 8),
-    note: "Algunos videos pueden requerir descarga en el navegador (clic derecho → guardar). Uso personal y con permiso del titular.",
-  }
+  throw new Error("YouTube downloader no está disponible en Vercel. Usa TikTok, Instagram, Facebook o X.")
 }
 
 async function resolveX(url: string): Promise<MediaResolveResult> {

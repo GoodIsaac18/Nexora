@@ -38,7 +38,7 @@ export function YoutubeThumbnailDownloader() {
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <FieldLabel htmlFor="yt-input">YouTube URL or video ID</FieldLabel>
+        <FieldLabel htmlFor="yt-url">YouTube URL or video ID</FieldLabel>
         <input
           id="yt-url"
           value={url}

@@ -148,7 +148,7 @@ export function FaviconGenerator() {
             <div className="mt-4 flex justify-center">
               <img
                 src={preview}
-                alt="Original"
+                alt="Imagen original para generar favicon"
                 className="max-h-48 w-auto rounded-lg border border-border"
               />
             </div>
@@ -178,7 +178,7 @@ export function FaviconGenerator() {
                 <div key={icon.size} className="flex flex-col items-center gap-2">
                   <img
                     src={icon.dataUrl}
-                    alt={`${icon.size}x${icon.size}`}
+                    alt={`Favicon generado de tamaño ${icon.size}x${icon.size} píxeles`}
                     className="size-12 rounded border border-border"
                     style={{ width: icon.size, height: icon.size, maxWidth: "64px", maxHeight: "64px" }}
                   />

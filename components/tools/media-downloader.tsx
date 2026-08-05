@@ -93,7 +93,7 @@ export function MediaDownloader({ slug, placeholder, hint }: MediaDownloaderProp
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={result.thumbnail}
-              alt=""
+              alt={`Thumbnail de ${result.title || 'video'}`}
               className="max-h-48 w-auto rounded-lg border border-border object-cover"
             />
           )}

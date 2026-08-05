@@ -5,12 +5,12 @@ import { ChevronRight, Sparkles } from "lucide-react"
 import { categories, getCategory, toolsByCategory, availableTools, SITE } from "@/lib/tools"
 import { ToolCard } from "@/components/tool-card"
 
-export function generateStaticParams() {
-  return categories.map((category) => ({ slug: category.slug }))
-}
+// Make this route dynamic to avoid 404s in production
+export const dynamic = 'force-dynamic'
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const category = getCategory(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const category = getCategory(slug)
   if (!category) return {}
 
   const items = toolsByCategory(category.slug)
@@ -33,13 +33,15 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   }
 }
 
-export default function CategoryHubPage({ params }: { params: { slug: string } }) {
-  const category = getCategory(params.slug)
+export default async function CategoryHubPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const category = getCategory(slug)
   if (!category) notFound()
 
   const items = toolsByCategory(category.slug)
   const availableCount = availableTools().filter((tool) => tool.category === category.slug).length
   const featured = items.slice(0, 3)
+  
   const guideSteps = [
     `Pick the tool that matches your ${category.slug} workflow.`,
     `Open the tool and enter your content or file.`,
@@ -109,7 +111,14 @@ export default function CategoryHubPage({ params }: { params: { slug: string } }
           <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Featured tools</h2>
           <div className="mt-5 grid gap-4">
             {featured.map((tool) => (
-              <ToolCard key={tool.slug} tool={tool} />
+              <ToolCard 
+                key={tool.slug} 
+                slug={tool.slug}
+                name={tool.name}
+                description={tool.description}
+                iconName={tool.iconName || 'FileText'}
+                available={tool.available}
+              />
             ))}
           </div>
         </div>
@@ -128,7 +137,14 @@ export default function CategoryHubPage({ params }: { params: { slug: string } }
 
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {items.map((tool) => (
-            <ToolCard key={tool.slug} tool={tool} />
+            <ToolCard 
+              key={tool.slug} 
+              slug={tool.slug}
+              name={tool.name}
+              description={tool.description}
+              iconName={tool.iconName || 'FileText'}
+              available={tool.available}
+            />
           ))}
         </div>
       </section>

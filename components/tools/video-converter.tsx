@@ -155,7 +155,7 @@ export function VideoConverter() {
         {file && (
           <>
             <div className="mt-6">
-              <FieldLabel>Formato de salida</FieldLabel>
+              <FieldLabel htmlFor="format-select">Formato de salida</FieldLabel>
               <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {conversionOptions.map((option) => {
                   const Icon = option.icon

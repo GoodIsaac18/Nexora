@@ -123,7 +123,7 @@ export function ImageGenerator() {
       {generatedImage && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <label htmlFor="generated-image" className="text-xs sm:text-sm font-medium">Imagen generada</label>
+            <span className="text-xs sm:text-sm font-medium">Imagen generada</span>
             <button
               onClick={downloadImage}
               className="inline-flex items-center gap-2 rounded-lg px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors hover:bg-muted"
@@ -133,12 +133,16 @@ export function ImageGenerator() {
           </div>
           <div className="relative rounded-xl overflow-hidden bg-muted">
             <img
-              id="generated-image"
               src={generatedImage}
               alt="Imagen generada"
               className="w-full h-auto"
+              onLoad={() => console.log("Image loaded successfully")}
+              onError={() => console.error("Image failed to load")}
             />
           </div>
+          <p className="mt-2 text-[10px] sm:text-xs text-muted-foreground break-all">
+            URL: {generatedImage}
+          </p>
         </div>
       )}
 
