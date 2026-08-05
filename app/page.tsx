@@ -40,11 +40,11 @@ export default function HomePage() {
               <p className="mx-auto mt-4 max-w-xl text-base text-muted-foreground sm:mt-6 sm:text-lg">
                 Nuestro asistente de IA te ayuda a encontrar la herramienta perfecta. Solo dile qué necesitas hacer y él te recomendará la mejor opción.
               </p>
-              <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row">
+              <div className="mt-6 flex flex-col items-center justify-center gap-4 sm:mt-8">
                 <AIAssistantCTA />
-                <span className="text-sm text-muted-foreground sm:text-base">
+                <p className="text-sm text-muted-foreground sm:text-base">
                   Ejemplos: "parafrasear texto", "analizar CV", "convertir divisas"
-                </span>
+                </p>
               </div>
             </div>
           </div>

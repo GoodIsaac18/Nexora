@@ -15,13 +15,31 @@ export function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "¡Hola! Soy el asistente de Nexora. Estoy aquí para ayudarte a navegar por nuestras herramientas. ¿Qué necesitas hacer? (ej: parafrasear texto, analizar CV, convertir divisas, etc.)"
+      content: "¡Hola! Soy el asistente de Anubis AI. Estoy aquí para ayudarte a navegar por nuestras herramientas. ¿Qué necesitas hacer? (ej: parafrasear texto, analizar CV, convertir divisas, etc.)"
     }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isCooldown, setIsCooldown] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Cargar mensajes desde localStorage después del montaje
+  useEffect(() => {
+    const saved = localStorage.getItem('chatbot-messages')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        setMessages(parsed)
+      } catch {
+        // Si hay error, mantener el mensaje inicial
+      }
+    }
+  }, [])
+
+  // Guardar mensajes en localStorage cuando cambian
+  useEffect(() => {
+    localStorage.setItem('chatbot-messages', JSON.stringify(messages))
+  }, [messages])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -30,6 +48,14 @@ export function Chatbot() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  const clearConversation = () => {
+    setMessages([{
+      role: "assistant",
+      content: "¡Hola! Soy el asistente de Anubis AI. Estoy aquí para ayudarte a navegar por nuestras herramientas. ¿Qué necesitas hacer? (ej: parafrasear texto, analizar CV, convertir divisas, etc.)"
+    }])
+    localStorage.removeItem('chatbot-messages')
+  }
 
   const handleSend = async () => {
     if (!input.trim() || isLoading || isCooldown) return
@@ -131,9 +157,16 @@ export function Chatbot() {
               <Bot className="size-5 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-sm sm:text-base">Asistente Nexora</h3>
+              <h3 className="font-semibold text-sm sm:text-base">Asistente Anubis AI</h3>
               <p className="text-xs text-muted-foreground">Conoce todas las herramientas</p>
             </div>
+            <button
+              onClick={clearConversation}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              title="Limpiar conversación"
+            >
+              Limpiar
+            </button>
           </div>
 
           {/* Mensajes */}

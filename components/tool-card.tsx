@@ -90,7 +90,7 @@ export function ToolCard({ slug, name, description, iconName, available, classNa
   const content = (
     <>
       <div className="flex items-start justify-between gap-3 lg:gap-4">
-        <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 lg:size-14 lg:rounded-2xl lg:bg-gradient-to-br lg:from-accent lg:to-accent/80 lg:group-hover:from-primary lg:group-hover:to-primary/80 lg:group-hover:text-primary-foreground lg:group-hover:shadow-lg lg:group-hover:shadow-primary/30">
+        <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 lg:size-14 lg:rounded-2xl lg:bg-accent lg:group-hover:bg-primary lg:group-hover:text-primary-foreground lg:group-hover:shadow-lg lg:group-hover:shadow-primary/30">
           {IconComponent ? <IconComponent className="size-5 lg:size-7" /> : <span className="text-xs">No icon</span>}
         </span>
         {available ? (
@@ -101,8 +101,8 @@ export function ToolCard({ slug, name, description, iconName, available, classNa
           </span>
         )}
       </div>
-      <h3 className="mt-4 font-semibold tracking-tight group-hover:text-primary transition-colors lg:mt-5 lg:text-lg lg:font-bold">{name || 'No name'}</h3>
-      <p className="mt-1 text-sm leading-relaxed text-muted-foreground group-hover:text-foreground/80 transition-colors lg:mt-2">{description || 'No description'}</p>
+      <h3 className="mt-4 font-semibold tracking-tight text-foreground group-hover:text-primary transition-colors lg:mt-5 lg:text-lg lg:font-bold">{name || 'No name'}</h3>
+      <p className="mt-1 text-sm leading-relaxed text-muted-foreground group-hover:text-foreground transition-colors lg:mt-2">{description || 'No description'}</p>
       
       {/* Like button */}
       {available && (
@@ -124,7 +124,7 @@ export function ToolCard({ slug, name, description, iconName, available, classNa
   )
 
   const base =
-    "group relative flex flex-col rounded-2xl border border-border bg-card p-5 transition-all duration-300 lg:rounded-3xl lg:border-2 lg:bg-card/80 lg:backdrop-blur-sm lg:p-6 lg:duration-500"
+    "group relative flex flex-col rounded-2xl border border-border bg-card p-5 transition-all duration-300 lg:rounded-3xl lg:border-2 lg:bg-card lg:p-6 lg:duration-500"
 
   if (!available) {
     return <div className={cn(base, "opacity-70 grayscale", className)}>{content}</div>

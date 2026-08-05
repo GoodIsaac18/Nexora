@@ -43,8 +43,8 @@ export const metadata: Metadata = {
     description: SITE.description,
   },
   icons: {
-    icon: "/nexora.png",
-    apple: "/nexora.png",
+    icon: "/anubis.ico",
+    apple: "/icon-light-32x32.png",
   },
   other: {
     "google-adsense-account": "ca-pub-6351511741135891",
@@ -68,7 +68,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`bg-background ${geistSans.variable} ${geistMono.variable}`}
+      className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -88,8 +88,15 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-dvh font-sans antialiased">
-        <div className="flex min-h-dvh flex-col">
+      <body className="min-h-dvh font-sans antialiased relative">
+        {/* Watermark */}
+        <img 
+          src="/anubis-ai.png" 
+          alt="Anubis AI Watermark" 
+          className="pointer-events-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] sm:size-[800px] lg:size-[1000px] opacity-12 dark:opacity-15 z-0"
+        />
+        
+        <div className="flex min-h-dvh flex-col relative z-10">
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />

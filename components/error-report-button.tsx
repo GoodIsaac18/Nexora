@@ -96,7 +96,7 @@ export function ErrorReportButton({ toolSlug, toolName }: ErrorReportButtonProps
                   <div className="text-center">
                     <p className="text-base font-semibold">¡Gracias!</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Tu reporte nos ayuda a mejorar Nexora
+                      Tu reporte nos ayuda a mejorar Anubis AI
                     </p>
                   </div>
                 </div>

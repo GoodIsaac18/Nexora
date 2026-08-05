@@ -6,7 +6,7 @@ import { CopyButton } from "@/components/copy-button"
 import { FieldLabel } from "@/components/tools/ui"
 
 export function QrCodeGenerator() {
-  const [text, setText] = useState("https://example.com")
+  const [text, setText] = useState("https://nexora-jade-eta.vercel.app")
   const [size, setSize] = useState(256)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [error, setError] = useState("")

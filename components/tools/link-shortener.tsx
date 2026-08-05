@@ -51,7 +51,7 @@ export function LinkShortener() {
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://example.com/pagina-muy-larga"
+          placeholder="https://nexora-jade-eta.vercel.app/json-formatter"
           className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
         />
         <p className="mt-2 text-xs text-muted-foreground">

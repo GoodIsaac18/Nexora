@@ -29,7 +29,7 @@ function buildUtmUrl(
 }
 
 export function UtmLinkBuilder() {
-  const [base, setBase] = useState("https://example.com/landing")
+  const [base, setBase] = useState("https://nexora-jade-eta.vercel.app/json-formatter")
   const [source, setSource] = useState("")
   const [medium, setMedium] = useState("")
   const [campaign, setCampaign] = useState("")

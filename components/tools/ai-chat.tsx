@@ -34,6 +34,24 @@ export function AiChat() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Cargar mensajes desde localStorage después del montaje
+  useEffect(() => {
+    const saved = localStorage.getItem('ai-chat-messages')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        setMessages(parsed)
+      } catch {
+        // Si hay error, mantener el mensaje inicial
+      }
+    }
+  }, [])
+
+  // Guardar mensajes en localStorage cuando cambian
+  useEffect(() => {
+    localStorage.setItem('ai-chat-messages', JSON.stringify(messages))
+  }, [messages])
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
@@ -130,6 +148,9 @@ export function AiChat() {
     setError(null)
     setIsCooldown(false)
     setAttachments([])
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('ai-chat-messages')
+    }
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

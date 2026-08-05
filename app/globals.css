@@ -83,6 +83,10 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+html {
+  background-color: var(--background);
+}
+
 .dark {
   color-scheme: dark;
   --background: oklch(0.16 0.015 265);

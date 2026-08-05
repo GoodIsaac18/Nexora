@@ -20,8 +20,8 @@ export function SiteFooter() {
             <div className="max-w-sm">
               <Link href="/" className="group flex items-center gap-3">
                 <img 
-                  src="/nexora.png" 
-                  alt="Nexora Logo" 
+                  src="/anubis-ai.png" 
+                  alt="Anubis AI Logo" 
                   className="size-10 rounded-xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6"
                 />
                 <div className="flex flex-col">

@@ -7,7 +7,7 @@ export default function TermsPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">1. Aceptación de Términos</h2>
           <p>
-            Al acceder y utilizar Nexora, aceptas estar sujeto a estos términos y condiciones. 
+            Al acceder y utilizar Anubis AI, aceptas estar sujeto a estos términos y condiciones. 
             Si no estás de acuerdo con alguno de estos términos, no debes utilizar nuestro servicio.
           </p>
         </section>
@@ -15,7 +15,7 @@ export default function TermsPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">2. Descripción del Servicio</h2>
           <p>
-            Nexora es una biblioteca de herramientas digitales en línea que proporciona diversos servicios 
+            Anubis AI es una biblioteca de herramientas digitales en línea que proporciona diversos servicios 
             como formateo de JSON, generación de contraseñas, selección de colores, conversión de Markdown, 
             herramientas de IA y más. Todas las herramientas se ejecutan en tu navegador cuando sea posible, 
             garantizando privacidad y seguridad.
@@ -45,15 +45,15 @@ export default function TermsPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">5. Propiedad Intelectual</h2>
           <p>
-            Todo el contenido, características y funcionalidades de Nexora son propiedad exclusiva 
-            de Nexora y están protegidos por leyes de derechos de autor y otros tratados internacionales.
+            Todo el contenido, características y funcionalidades de Anubis AI son propiedad exclusiva 
+            de Anubis AI y están protegidos por leyes de derechos de autor y otros tratados internacionales.
           </p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">6. Limitación de Responsabilidad</h2>
           <p>
-            Nexora no se hace responsable de ningún daño directo, indirecto, incidental o consecuente 
+            Anubis AI no se hace responsable de ningún daño directo, indirecto, incidental o consecuente 
             que resulte del uso o la incapacidad de usar nuestro servicio. El servicio se proporciona 
             "tal cual" sin garantías de ningún tipo.
           </p>

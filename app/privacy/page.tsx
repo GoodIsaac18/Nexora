@@ -7,7 +7,7 @@ export default function PrivacyPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">1. Información que Recopilamos</h2>
           <p>
-            En Nexora, nos comprometemos a proteger tu privacidad. La mayoría de nuestras herramientas 
+            En Anubis AI, nos comprometemos a proteger tu privacidad. La mayoría de nuestras herramientas 
             se ejecutan localmente en tu navegador, lo que significa que tus datos no se envían a 
             nuestros servidores. Sin embargo, podemos recopilar:
           </p>

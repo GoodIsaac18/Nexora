@@ -7,8 +7,8 @@ import { FieldLabel } from "@/components/tools/ui"
 export function MetaTagGenerator() {
   const [title, setTitle] = useState("My awesome page")
   const [description, setDescription] = useState("A short, compelling description under 160 characters.")
-  const [url, setUrl] = useState("https://example.com")
-  const [image, setImage] = useState("https://example.com/og.png")
+  const [url, setUrl] = useState("https://nexora-jade-eta.vercel.app")
+  const [image, setImage] = useState("https://nexora-jade-eta.vercel.app/og.png")
 
   const output = useMemo(() => {
     const esc = (s: string) => s.replace(/"/g, "&quot;")

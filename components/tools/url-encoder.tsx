@@ -41,7 +41,7 @@ export function UrlEncoder() {
             id="url-in"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={mode === "encode" ? "https://example.com/?q=hello world" : "https%3A%2F%2Fexample.com"}
+            placeholder={mode === "encode" ? "https://nexora-jade-eta.vercel.app/json-formatter" : "https%3A%2F%2Fnexora-jade-eta.vercel.app"}
             spellCheck={false}
             className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[200px]"
           />

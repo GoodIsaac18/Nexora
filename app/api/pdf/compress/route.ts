@@ -20,8 +20,8 @@ export async function POST(request: Request) {
     
     // Eliminar metadatos innecesarios
     pdfDoc.setTitle(pdfDoc.getTitle() || "Compressed")
-    pdfDoc.setProducer("Nexora PDF Compressor")
-    pdfDoc.setCreator("Nexora")
+    pdfDoc.setProducer("Anubis AI PDF Compressor")
+    pdfDoc.setCreator("Anubis AI")
     
     // Guardar con optimizaciones
     const pdfBytes = await pdfDoc.save({

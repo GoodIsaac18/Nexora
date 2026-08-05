@@ -46,11 +46,11 @@ import {
 } from "lucide-react"
 
 export const SITE = {
-  name: "Nexora",
+  name: "Anubis AI",
   tagline: "Fast, free tools for developers & creators",
   description:
     "A growing collection of fast, privacy-friendly online tools. Format JSON, generate passwords, pick colors, convert Markdown and more — all in your browser.",
-  url: "https://nexora.example.com",
+  url: "https://nexora-jade-eta.vercel.app",
 }
 
 export type ToolCategory = {

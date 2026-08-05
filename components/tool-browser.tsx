@@ -138,7 +138,7 @@ export function ToolBrowser() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search tools… e.g. JSON, password, color"
           aria-label="Search tools"
-          className="h-14 w-full rounded-2xl border border-border bg-card pl-12 pr-12 text-base shadow-sm outline-none transition-all placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10 lg:h-16 lg:rounded-3xl lg:border-2 lg:bg-card/50 lg:backdrop-blur-sm lg:pl-14 lg:pr-14 lg:text-lg lg:shadow-lg lg:focus:bg-card lg:hover:border-primary/30"
+          className="h-14 w-full rounded-2xl border border-border bg-background text-base shadow-sm outline-none transition-all placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10 lg:h-16 lg:rounded-3xl lg:border-2 lg:bg-card lg:pl-14 lg:pr-14 lg:text-lg lg:shadow-lg lg:focus:bg-card lg:hover:border-primary/30"
         />
         {query && (
           <button
@@ -288,7 +288,7 @@ function FilterChip({
         "rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-300 lg:border-2 lg:px-6 lg:py-2.5 lg:text-base lg:font-semibold",
         active
           ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:scale-105 hover:shadow-xl hover:shadow-primary/40 active:scale-95"
-          : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground hover:scale-105 active:scale-95 lg:bg-background/50 lg:backdrop-blur-sm lg:hover:border-primary/50 lg:hover:bg-card",
+          : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground hover:scale-105 active:scale-95 lg:bg-card lg:hover:border-primary/50 lg:hover:bg-card",
       )}
     >
       {children}

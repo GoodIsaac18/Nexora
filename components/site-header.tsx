@@ -39,8 +39,8 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link href="/" className="group flex items-center gap-2">
           <img 
-            src="/nexora.png" 
-            alt="Nexora Logo" 
+            src="/anubis-ai.png" 
+            alt="Anubis AI Logo" 
             className="size-9 rounded-lg transition-transform duration-300 group-hover:rotate-6"
           />
           <span className="text-lg font-semibold tracking-tight">{SITE.name}</span>

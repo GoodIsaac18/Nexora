@@ -1,10 +1,10 @@
-# Nexora
+# Anubis AI
 
-Nexora es una plataforma de herramientas online orientada a velocidad, privacidad y claridad de uso. El proyecto reúne utilidades para desarrolladores, creadores de contenido y usuarios generales en una sola experiencia web, sin necesidad de registro y con procesamiento local cuando la herramienta lo permite.
+Anubis AI es una plataforma de herramientas online orientada a velocidad, privacidad y claridad de uso. El proyecto reúne utilidades para desarrolladores, creadores de contenido y usuarios generales en una sola experiencia web, sin necesidad de registro y con procesamiento local cuando la herramienta lo permite.
 
 ## Resumen ejecutivo
 
-El objetivo de Nexora es ofrecer una colección amplia de herramientas prácticas que puedan resolverse en pocos pasos, con una interfaz moderna y una estructura pensada para descubrimiento por categorías, SEO y navegación directa.
+El objetivo de Anubis AI es ofrecer una colección amplia de herramientas prácticas que puedan resolverse en pocos pasos, con una interfaz moderna y una estructura pensada para descubrimiento por categorías, SEO y navegación directa.
 
 ## Principios del producto
 
@@ -164,7 +164,7 @@ Para una instalación local, copia el archivo de ejemplo de entorno si está dis
 
 ## Estado del proyecto
 
-Nexora se encuentra en una fase funcional avanzada. El catálogo principal ya está definido y las herramientas están organizadas por categorías. El siguiente foco natural del proyecto es fortalecer la documentación operativa, la validación automatizada y la expansión del contenido SEO por categoría.
+Anubis AI se encuentra en una fase funcional avanzada. El catálogo principal ya está definido y las herramientas están organizadas por categorías. El siguiente foco natural del proyecto es fortalecer la documentación operativa, la validación automatizada y la expansión del contenido SEO por categoría.
 
 ## Contribuciones
 
