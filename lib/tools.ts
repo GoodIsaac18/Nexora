@@ -73,7 +73,7 @@ export type Tool = {
   /** Icon name for client components (optional, derived from icon if not provided) */
   iconName?: string
   /** true once the page under /app/<slug>/page.tsx exists */
-  available: true
+  available: boolean
   /** Optional custom guide for the tool */
   guide?: string
   /** Optional custom FAQ for the tool */
@@ -849,7 +849,7 @@ export const tools: Tool[] = [
     ],
     icon: Download,
     iconName: "Download",
-    available: true,
+    available: false,
     primaryKeyword: "youtube downloader mp3",
     metaDescription: "Descarga videos de YouTube en MP3 y MP4 gratis. HD calidad. YouTube downloader sin marca de agua. ¡Rápido y fácil!",
     ogImage: "/images/youtube-downloader-og.jpg",
@@ -883,7 +883,7 @@ export const tools: Tool[] = [
     ],
     icon: Download,
     iconName: "Download",
-    available: true,
+    available: false,
     primaryKeyword: "instagram downloader reels",
     metaDescription: "Descarga reels y videos de Instagram en MP4 gratis. Sin marca de agua. Herramienta rápida y segura. ¡Úsala ahora!",
     ogImage: "/images/instagram-downloader-og.jpg",
@@ -917,7 +917,7 @@ export const tools: Tool[] = [
     ],
     icon: Download,
     iconName: "Download",
-    available: true,
+    available: false,
     primaryKeyword: "facebook video downloader",
     metaDescription: "Descarga videos de Facebook en MP4 gratis. HD calidad. Facebook video downloader sin marca de agua. ¡Rápido y fácil!",
     ogImage: "/images/facebook-downloader-og.jpg",
@@ -951,7 +951,7 @@ export const tools: Tool[] = [
     ],
     icon: Download,
     iconName: "Download",
-    available: true,
+    available: false,
     primaryKeyword: "x twitter video downloader",
     metaDescription: "Descarga videos de X/Twitter en MP4 gratis. HD calidad. Twitter video downloader sin marca de agua. ¡Rápido y fácil!",
     ogImage: "/images/x-downloader-og.jpg",

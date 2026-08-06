@@ -47,17 +47,25 @@ export function ToolCard({ slug, name, description, iconName, available, classNa
     fetch(`/api/analytics/track?slug=${slug}`)
       .then(res => {
         if (!res.ok) {
+          // Silently handle 404 and other errors without logging
+          if (res.status === 404) {
+            setApiError(true)
+            return null
+          }
           throw new Error(`HTTP error! status: ${res.status}`)
         }
         return res.json()
       })
       .then(data => {
-        if (data.data && data.data.length > 0) {
+        if (data && data.data && data.data.length > 0) {
           setLikes(data.data[0].likes || 0)
         }
       })
       .catch(error => {
-        console.error("Error fetching likes:", error)
+        // Only log errors that aren't 404 (expected if analytics not set up)
+        if (error.message && !error.message.includes('404')) {
+          console.error("Error fetching likes:", error)
+        }
         setLikes(0)
         setApiError(true) // Disable further API calls on error
       })

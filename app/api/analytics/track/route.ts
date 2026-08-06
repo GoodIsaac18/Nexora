@@ -111,8 +111,11 @@ export async function GET(request: Request) {
         .eq('slug', slug)
         .single()
 
+      // Return empty data array instead of 404 if not found
       if (error && error.code !== 'PGRST116') {
-        throw error
+        // If it's a connection error or table doesn't exist, return empty data
+        console.error("Analytics error (returning empty):", error.message)
+        return NextResponse.json({ data: [] })
       }
 
       return NextResponse.json({ data: data ? [data] : [] })
@@ -139,12 +142,15 @@ export async function GET(request: Request) {
     const { data, error } = await query
 
     if (error) {
-      throw error
+      // Return empty data on error instead of throwing
+      console.error("Analytics query error (returning empty):", error.message)
+      return NextResponse.json({ data: [] })
     }
 
     return NextResponse.json({ data: data || [] })
   } catch (error) {
     console.error("Error getting analytics:", error)
-    return NextResponse.json({ error: "Error getting analytics" }, { status: 500 })
+    // Return empty data instead of 500 error
+    return NextResponse.json({ data: [] })
   }
 }

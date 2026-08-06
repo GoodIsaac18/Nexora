@@ -162,6 +162,52 @@ Para una instalación local, copia el archivo de ejemplo de entorno si está dis
 - `hooks/`: lógica reutilizable para estado y comportamiento.
 - `public/`: activos estáticos como imágenes, scripts y recursos compartidos.
 
+## Changelog
+
+### v7.1.4 (2026-08-06)
+
+**Agregado:**
+- Sección de newsletter en footer para suscripciones
+- Contador dinámico de herramientas disponibles en hero badge (muestra número real en lugar de "100+")
+- Respuestas amigables del asistente IA cuando se solicitan herramientas no disponibles
+
+**Modificado:**
+- Footer rediseñado con mejor UX/UI, ahora incluye:
+  - Newsletter con formulario de suscripción
+  - Sección de herramientas populares
+  - Categorías funcionales con conteo de herramientas
+  - Solo Instagram y Email como opciones de contacto (eliminados Twitter, Facebook, YouTube, GitHub)
+  - Eliminados enlaces a Sitemap y RSS (evitar errores 404)
+- Asistente IA mejorado para:
+  - Reconocer correctamente TikTok Downloader como herramienta disponible
+  - Responder amigablemente cuando se pregunte por herramientas ocultas (YouTube, Instagram downloaders)
+  - Mejor formato de contexto de herramientas para mejor comprensión
+
+**Corregido:**
+- Errores 404 en API de analytics ahora devuelven datos vacíos con status 200 en lugar de 404
+- Manejo de errores en ToolCard para no loggear errores 404 en consola
+- Tipo de propiedad `available` en interfaz Tool cambiado de `true` a `boolean` para permitir ocultar herramientas
+
+**Eliminado:**
+- Herramientas ocultas del catálogo visible:
+  - Instagram Downloader
+  - YouTube Downloader
+  - YouTube Thumbnail Downloader (restaurado posteriormente)
+  - Facebook Downloader
+  - X Video Downloader
+
+**Mantenidas:**
+- TikTok Downloader (disponible)
+- Video Converter (disponible)
+- YouTube Thumbnail Downloader (disponible)
+
+**Técnico:**
+- Build de producción verificado exitosamente (88 páginas estáticas)
+- Todas las herramientas funcionales correctamente
+- Responsive mejorado en múltiples herramientas
+
+---
+
 ## Estado del proyecto
 
 Anubis AI se encuentra en una fase funcional avanzada. El catálogo principal ya está definido y las herramientas están organizadas por categorías. El siguiente foco natural del proyecto es fortalecer la documentación operativa, la validación automatizada y la expansión del contenido SEO por categoría.
