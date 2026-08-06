@@ -49,65 +49,65 @@ export function ColorPicker() {
   ]
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
-      <Panel className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 sm:gap-6 lg:grid lg:grid-cols-[1fr_1.2fr]">
+      <div className="flex flex-col gap-3 sm:gap-4">
         <div
-          className="flex h-48 items-end rounded-xl border border-border p-4 transition-colors duration-300"
+          className="flex h-36 sm:h-48 items-end rounded-xl border border-border p-3 sm:p-4 transition-colors duration-300"
           style={{ backgroundColor: hex }}
         >
           <span
-            className="rounded-lg px-2.5 py-1 font-mono text-sm backdrop-blur"
+            className="rounded-lg px-2 sm:px-2.5 py-1 font-mono text-xs sm:text-sm backdrop-blur"
             style={{ backgroundColor: "rgba(255,255,255,0.85)", color: "#111" }}
           >
             {hex.toUpperCase()}
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <input
             type="color"
             value={hex}
             onChange={(e) => setHex(e.target.value)}
             aria-label="Pick a color"
-            className="h-12 w-16 cursor-pointer rounded-lg border border-border bg-transparent"
+            className="h-10 sm:h-12 w-12 sm:w-16 cursor-pointer rounded-lg border border-border bg-transparent"
           />
           <input
             type="text"
             value={hex}
             onChange={(e) => setHex(e.target.value)}
-            className="h-12 flex-1 rounded-xl border border-border bg-background px-3 font-mono text-sm outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
+            className="h-10 sm:h-12 flex-1 rounded-xl border border-border bg-background px-3 font-mono text-xs sm:text-sm outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
           />
         </div>
-      </Panel>
+      </div>
 
-      <Panel className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2 sm:gap-3">
         {formats.map((f) => (
           <div
             key={f.label}
-            className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background px-4 py-3"
+            className="flex items-center justify-between gap-2 sm:gap-3 rounded-xl border border-border bg-background px-3 sm:px-4 py-2.5 sm:py-3"
           >
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{f.label}</p>
-              <code className="font-mono text-sm">{f.value}</code>
+              <p className="text-[10px] sm:text-xs font-medium uppercase tracking-wide text-muted-foreground">{f.label}</p>
+              <code className="font-mono text-xs sm:text-sm">{f.value}</code>
             </div>
             <CopyButton value={f.value} label="" className="shrink-0 px-2" />
           </div>
         ))}
-        <div className="mt-1 grid grid-cols-2 gap-3">
-          <div className="rounded-xl border border-border bg-background p-4 text-center" style={{ color: hex }}>
-            <span className="text-lg font-semibold">Aa</span>
-            <p className="mt-1 text-xs text-muted-foreground">On light</p>
+        <div className="mt-1 grid grid-cols-2 gap-2 sm:gap-3">
+          <div className="rounded-xl border border-border bg-background p-3 sm:p-4 text-center" style={{ color: hex }}>
+            <span className="text-base sm:text-lg font-semibold">Aa</span>
+            <p className="mt-1 text-[10px] sm:text-xs text-muted-foreground">On light</p>
           </div>
           <div
-            className="rounded-xl border border-border p-4 text-center"
+            className="rounded-xl border border-border p-3 sm:p-4 text-center"
             style={{ backgroundColor: "#111", color: hex }}
           >
-            <span className="text-lg font-semibold">Aa</span>
-            <p className="mt-1 text-xs" style={{ color: "#888" }}>
+            <span className="text-base sm:text-lg font-semibold">Aa</span>
+            <p className="mt-1 text-[10px] sm:text-xs" style={{ color: "#888" }}>
               On dark
             </p>
           </div>
         </div>
-      </Panel>
+      </div>
     </div>
   )
 }

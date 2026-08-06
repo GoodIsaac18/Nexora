@@ -72,18 +72,18 @@ export function Translator() {
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Languages className="size-5" />
-          <h3 className="text-lg font-semibold">Traductor</h3>
+          <Languages className="size-4 sm:size-5" />
+          <h3 className="text-base sm:text-lg font-semibold">Traductor</h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
           <div>
             <FieldLabel htmlFor="source-lang">Idioma de origen</FieldLabel>
             <select
               id="source-lang"
               value={sourceLang}
               onChange={(e) => setSourceLang(e.target.value)}
-              className="w-full h-11 rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="w-full h-10 sm:h-11 rounded-xl border border-border bg-background px-3 sm:px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
             >
               {languages.map((lang) => (
                 <option key={lang.code} value={lang.code}>
@@ -100,7 +100,7 @@ export function Translator() {
                 id="target-lang"
                 value={targetLang}
                 onChange={(e) => setTargetLang(e.target.value)}
-                className="w-full h-11 rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full h-10 sm:h-11 rounded-xl border border-border bg-background px-3 sm:px-4 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
                 {languages.map((lang) => (
                   <option key={lang.code} value={lang.code}>
@@ -111,15 +111,15 @@ export function Translator() {
             </div>
             <button
               onClick={swapLanguages}
-              className="h-11 w-11 flex items-center justify-center rounded-xl border border-border bg-background hover:bg-muted transition-colors"
+              className="h-10 sm:h-11 w-10 sm:w-11 flex items-center justify-center rounded-xl border border-border bg-background hover:bg-muted transition-colors shrink-0"
               title="Intercambiar idiomas"
             >
-              <ArrowRightLeft className="size-5" />
+              <ArrowRightLeft className="size-4 sm:size-5" />
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
             <FieldLabel htmlFor="source-text">Texto original</FieldLabel>
             <textarea
@@ -127,8 +127,8 @@ export function Translator() {
               value={sourceText}
               onChange={(e) => setSourceText(e.target.value)}
               placeholder="Escribe o pega el texto a traducir..."
-              className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-              rows={6}
+              className="rounded-xl border border-border bg-background px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+              rows={5}
             />
           </div>
 
@@ -138,15 +138,15 @@ export function Translator() {
               {translatedText && (
                 <button
                   onClick={copyToClipboard}
-                  className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 rounded-lg px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors hover:bg-muted"
                 >
                   {copied ? (
                     <>
-                      <Check className="size-4" /> Copiado
+                      <Check className="size-3 sm:size-4" /> Copiado
                     </>
                   ) : (
                     <>
-                      <Copy className="size-4" /> Copiar
+                      <Copy className="size-3 sm:size-4" /> Copiar
                     </>
                   )}
                 </button>
@@ -157,21 +157,21 @@ export function Translator() {
               value={translatedText}
               readOnly
               placeholder="La traducción aparecerá aquí..."
-              className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-              rows={6}
+              className="rounded-xl border border-border bg-background px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+              rows={5}
             />
           </div>
         </div>
 
-        <div className="mt-4 flex gap-2">
-          <ActionButton onClick={translateText} disabled={!sourceText.trim() || isTranslating}>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <ActionButton onClick={translateText} disabled={!sourceText.trim() || isTranslating} className="flex-1 sm:flex-none">
             {isTranslating ? (
               <>
-                <Languages className="size-4 animate-spin" /> Traduciendo…
+                <Languages className="size-3 sm:size-4 animate-spin" /> Traduciendo…
               </>
             ) : (
               <>
-                <Languages className="size-4" /> Traducir
+                <Languages className="size-3 sm:size-4" /> Traducir
               </>
             )}
           </ActionButton>
@@ -180,14 +180,14 @@ export function Translator() {
               setSourceText("")
               setTranslatedText("")
             }}
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-border bg-background px-6 text-sm font-medium transition-colors hover:bg-muted"
+            className="inline-flex h-10 sm:h-11 items-center justify-center rounded-xl border border-border bg-background px-4 sm:px-6 text-xs sm:text-sm font-medium transition-colors hover:bg-muted"
           >
             Limpiar
           </button>
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-[10px] sm:text-xs text-muted-foreground">
         Traducción proporcionada por MyMemory Translation API. Para textos largos o traducciones profesionales, considera usar servicios especializados.
       </p>
     </div>

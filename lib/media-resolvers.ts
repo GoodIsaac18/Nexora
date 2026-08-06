@@ -174,50 +174,280 @@ async function resolveX(url: string): Promise<MediaResolveResult> {
 }
 
 async function resolveInstagram(url: string): Promise<MediaResolveResult> {
-  const body = new URLSearchParams({ q: url, t: "media", lang: "en" })
-  const res = await fetch("https://v3.saveig.app/api/ajaxSearch", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "application/json",
+  const services = [
+    {
+      name: "InstagramUrlDirect",
+      fn: async () => {
+        try {
+          const { instagramGetUrl } = await import("instagram-url-direct")
+          const media = await instagramGetUrl(url) as any
+          
+          console.log("InstagramUrlDirect result:", media)
+          
+          if (!media) {
+            console.log("InstagramUrlDirect: no media returned")
+            return null
+          }
+
+          const options: MediaDownloadOption[] = []
+          // La librería puede devolver diferentes estructuras, intentamos extraer la URL
+          let mediaUrl = media.url || media.media_url || (typeof media === 'string' ? media : null)
+          
+          // Si es un array, tomar el primer elemento
+          if (Array.isArray(media) && media.length > 0) {
+            mediaUrl = media[0].url || media[0].media_url || media[0]
+          }
+          
+          console.log("InstagramUrlDirect extracted URL:", mediaUrl)
+          
+          if (!mediaUrl) {
+            console.log("InstagramUrlDirect: no URL found in result")
+            return null
+          }
+
+          const isVideo = /\.mp4/i.test(mediaUrl)
+          options.push({
+            label: isVideo ? "Video" : "Imagen",
+            url: mediaUrl,
+            ext: isVideo ? "mp4" : "jpg",
+            kind: isVideo ? "video" : "image",
+          })
+
+          if (options.length === 0) return null
+          console.log("InstagramUrlDirect: success with", options.length, "options")
+          return { options, title: "Instagram media", thumbnail: undefined }
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error)
+          console.error("InstagramUrlDirect error:", errorMessage)
+          // Si el error es sobre el tipo de enlace, devolvemos null para que otros servicios lo intenten
+          if (errorMessage.includes("Only posts/reels supported")) {
+            console.log("InstagramUrlDirect: link type not supported, trying other services")
+            return null
+          }
+          return null
+        }
+      }
     },
-    body: body.toString(),
-    cache: "no-store",
-  })
+    {
+      name: "SnapInsta",
+      fn: async () => {
+        const res = await fetch("https://api.snapinsta.app/download", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url }),
+          cache: "no-store",
+        })
 
-  const json = (await res.json()) as { status?: string; data?: string; message?: string }
-  if (json.status !== "ok" || !json.data) {
-    throw new Error(json.message ?? "No se pudo resolver Instagram. Comprueba que el reel/post sea público.")
+        if (!res.ok) return null
+        const json = (await res.json()) as { media_url?: string; quality?: string; format?: string; error?: string }
+        if (json.error || !json.media_url) {
+          return null
+        }
+
+        const options: MediaDownloadOption[] = []
+        const isVideo = json.format === "mp4" || /\.mp4/i.test(json.media_url)
+        options.push({
+          label: `${json.quality || "HD"} ${isVideo ? "Video" : "Imagen"}`,
+          url: json.media_url,
+          ext: json.format || (isVideo ? "mp4" : "jpg"),
+          kind: isVideo ? "video" : "image",
+        })
+
+        if (options.length === 0) return null
+        return { options, title: "Instagram media", thumbnail: undefined }
+      }
+    },
+    {
+      name: "InstaSave",
+      fn: async () => {
+        const body = new URLSearchParams({ url, lang: "en" })
+        const res = await fetch("https://instasave.to/api/ajaxSearch", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Accept: "application/json",
+          },
+          body: body.toString(),
+          cache: "no-store",
+        })
+
+        if (!res.ok) return null
+        const json = (await res.json()) as { status?: string; data?: string; message?: string }
+        if (json.status !== "ok" || !json.data) {
+          return null
+        }
+
+        const html = json.data
+        const options: MediaDownloadOption[] = []
+        const hrefRe = /href="(https:\/\/[^"]+\.(?:mp4|jpg|jpeg|webp)[^"]*)"/gi
+        let m: RegExpExecArray | null
+        const seen = new Set<string>()
+        while ((m = hrefRe.exec(html)) !== null) {
+          const raw = m[1].replace(/&amp;/g, "&")
+          if (seen.has(raw)) continue
+          seen.add(raw)
+          const isVideo = /\.mp4/i.test(raw)
+          options.push({
+            label: isVideo ? `Video ${options.filter((o) => o.kind === "video").length + 1}` : "Imagen",
+            url: raw,
+            ext: isVideo ? "mp4" : "jpg",
+            kind: isVideo ? "video" : "image",
+          })
+        }
+
+        if (options.length === 0) return null
+        return { options, title: "Instagram media", thumbnail: undefined }
+      }
+    },
+    {
+      name: "Igram",
+      fn: async () => {
+        const body = new URLSearchParams({ url, lang: "en" })
+        const res = await fetch("https://igram.io/api/ajaxSearch", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Accept: "application/json",
+          },
+          body: body.toString(),
+          cache: "no-store",
+        })
+
+        if (!res.ok) return null
+        const json = (await res.json()) as { status?: string; data?: string; message?: string }
+        if (json.status !== "ok" || !json.data) {
+          return null
+        }
+
+        const html = json.data
+        const options: MediaDownloadOption[] = []
+        const hrefRe = /href="(https:\/\/[^"]+\.(?:mp4|jpg|jpeg|webp)[^"]*)"/gi
+        let m: RegExpExecArray | null
+        const seen = new Set<string>()
+        while ((m = hrefRe.exec(html)) !== null) {
+          const raw = m[1].replace(/&amp;/g, "&")
+          if (seen.has(raw)) continue
+          seen.add(raw)
+          const isVideo = /\.mp4/i.test(raw)
+          options.push({
+            label: isVideo ? `Video ${options.filter((o) => o.kind === "video").length + 1}` : "Imagen",
+            url: raw,
+            ext: isVideo ? "mp4" : "jpg",
+            kind: isVideo ? "video" : "image",
+          })
+        }
+
+        if (options.length === 0) return null
+        return { options, title: "Instagram media", thumbnail: undefined }
+      }
+    },
+    {
+      name: "SaveIG",
+      fn: async () => {
+        const body = new URLSearchParams({ q: url, t: "media", lang: "en" })
+        const res = await fetch("https://v3.saveig.app/api/ajaxSearch", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Accept: "application/json",
+          },
+          body: body.toString(),
+          cache: "no-store",
+        })
+
+        const json = (await res.json()) as { status?: string; data?: string; message?: string }
+        if (json.status !== "ok" || !json.data) {
+          return null
+        }
+
+        const html = json.data
+        const options: MediaDownloadOption[] = []
+        const hrefRe = /href="(https:\/\/[^"]+\.(?:mp4|jpg|jpeg|webp)[^"]*)"/gi
+        let m: RegExpExecArray | null
+        const seen = new Set<string>()
+        while ((m = hrefRe.exec(html)) !== null) {
+          const raw = m[1].replace(/&amp;/g, "&")
+          if (seen.has(raw)) continue
+          seen.add(raw)
+          const isVideo = /\.mp4/i.test(raw)
+          options.push({
+            label: isVideo ? `Video ${options.filter((o) => o.kind === "video").length + 1}` : "Imagen",
+            url: raw,
+            ext: isVideo ? "mp4" : "jpg",
+            kind: isVideo ? "video" : "image",
+          })
+        }
+
+        if (options.length === 0) return null
+        return { options, title: "Instagram media", thumbnail: undefined }
+      }
+    },
+    {
+      name: "InstagramIO",
+      fn: async () => {
+        const body = new URLSearchParams({ url, lang: "en" })
+        const res = await fetch("https://instagram.io/api/ajaxSearch", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Accept: "application/json",
+          },
+          body: body.toString(),
+          cache: "no-store",
+        })
+
+        if (!res.ok) return null
+        const json = (await res.json()) as { status?: string; data?: string; message?: string }
+        if (json.status !== "ok" || !json.data) {
+          return null
+        }
+
+        const html = json.data
+        const options: MediaDownloadOption[] = []
+        const hrefRe = /href="(https:\/\/[^"]+\.(?:mp4|jpg|jpeg|webp)[^"]*)"/gi
+        let m: RegExpExecArray | null
+        const seen = new Set<string>()
+        while ((m = hrefRe.exec(html)) !== null) {
+          const raw = m[1].replace(/&amp;/g, "&")
+          if (seen.has(raw)) continue
+          seen.add(raw)
+          const isVideo = /\.mp4/i.test(raw)
+          options.push({
+            label: isVideo ? `Video ${options.filter((o) => o.kind === "video").length + 1}` : "Imagen",
+            url: raw,
+            ext: isVideo ? "mp4" : "jpg",
+            kind: isVideo ? "video" : "image",
+          })
+        }
+
+        if (options.length === 0) return null
+        return { options, title: "Instagram media", thumbnail: undefined }
+      }
+    }
+  ]
+
+  let lastError: string | null = null
+  for (const service of services) {
+    try {
+      const result = await service.fn()
+      if (result && result.options.length > 0) {
+        return {
+          platform: "instagram",
+          title: result.title || "Instagram media",
+          thumbnail: result.thumbnail,
+          options: result.options.slice(0, 10),
+          note: "Solo contenido público. Los stories privados no están soportados.",
+        }
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : "Error desconocido"
+      console.error(`Instagram service ${service.name} failed:`, error)
+    }
   }
 
-  const html = json.data
-  const options: MediaDownloadOption[] = []
-  const hrefRe = /href="(https:\/\/[^"]+\.(?:mp4|jpg|jpeg|webp)[^"]*)"/gi
-  let m: RegExpExecArray | null
-  const seen = new Set<string>()
-  while ((m = hrefRe.exec(html)) !== null) {
-    const raw = m[1].replace(/&amp;/g, "&")
-    if (seen.has(raw)) continue
-    seen.add(raw)
-    const isVideo = /\.mp4/i.test(raw)
-    options.push({
-      label: isVideo ? `Video ${options.filter((o) => o.kind === "video").length + 1}` : "Imagen",
-      url: raw,
-      ext: isVideo ? "mp4" : "jpg",
-      kind: isVideo ? "video" : "image",
-    })
-  }
-
-  if (options.length === 0) {
-    throw new Error("No se encontraron medios en este enlace de Instagram.")
-  }
-
-  return {
-    platform: "instagram",
-    title: "Instagram media",
-    options: options.slice(0, 10),
-    note: "Solo contenido público. Los stories privados no están soportados.",
-  }
+  throw new Error(lastError || "No se pudo obtener el video de Instagram. Todos los servicios fallaron. Esto puede ser debido a problemas de red temporal o que los servicios están caídos. Intenta nuevamente en unos minutos.")
 }
 
 async function resolveFacebook(url: string): Promise<MediaResolveResult> {

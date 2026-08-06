@@ -43,22 +43,22 @@ export function CaseConverter() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type something…"
-          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[120px] font-sans"
+          className="rounded-xl border border-border bg-background px-3 sm:px-4 py-2.5 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[100px] sm:min-h-[120px] font-sans"
         />
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2">
         {Object.entries(transforms).map(([label, fn]) => {
           const value = text ? fn(text) : ""
           return (
             <div
               key={label}
-              className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3"
+              className="flex items-center justify-between gap-2 sm:gap-3 rounded-xl border border-border bg-card px-3 sm:px-4 py-2.5 sm:py-3"
             >
-              <div className="min-w-0">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-                <p className="truncate font-mono text-sm">{value || "—"}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] sm:text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+                <p className="truncate font-mono text-xs sm:text-sm">{value || "—"}</p>
               </div>
-              <CopyButton value={value} label="" className="shrink-0 px-2" disabled={!value} />
+              <CopyButton value={value} label="" className="shrink-0 px-2 sm:px-3" disabled={!value} />
             </div>
           )
         })}

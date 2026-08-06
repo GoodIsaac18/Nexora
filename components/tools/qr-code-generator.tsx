@@ -37,7 +37,7 @@ export function QrCodeGenerator() {
           id="qr-text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[120px]"
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none min-h-[100px] sm:min-h-[120px]"
           placeholder="https://… or any text"
         />
         <div className="mt-4">
@@ -58,7 +58,13 @@ export function QrCodeGenerator() {
         </div>
       </div>
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6 flex flex-col items-center justify-center gap-4">
-        <canvas ref={canvasRef} className="rounded-xl border border-border bg-white p-2" />
+        <div className="w-full flex items-center justify-center bg-white rounded-xl border border-border p-2 sm:p-4 overflow-hidden">
+          <canvas 
+            ref={canvasRef} 
+            className="max-w-full h-auto"
+            style={{ maxWidth: '100%', height: 'auto' }}
+          />
+        </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <button
           type="button"
