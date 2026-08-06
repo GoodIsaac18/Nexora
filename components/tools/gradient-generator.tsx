@@ -76,14 +76,14 @@ export function GradientGenerator() {
   const css = generateCSS()
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 sm:gap-6">
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <FieldLabel htmlFor="gradient-type">Tipo de gradiente</FieldLabel>
         <select
           id="gradient-type"
           value={gradientType}
           onChange={(e) => setGradientType(e.target.value as GradientType)}
-          className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="mt-2 w-full rounded-xl border border-border bg-background px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary"
         >
           <option value="linear">Lineal</option>
           <option value="radial">Radial</option>
@@ -91,12 +91,12 @@ export function GradientGenerator() {
 
         {gradientType === "linear" && (
           <>
-            <FieldLabel htmlFor="direction" className="mt-4">Dirección</FieldLabel>
+            <FieldLabel htmlFor="direction" className="mt-3 sm:mt-4">Dirección</FieldLabel>
             <select
               id="direction"
               value={direction}
               onChange={(e) => setDirection(e.target.value as LinearGradientDirection)}
-              className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="mt-2 w-full rounded-xl border border-border bg-background px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="to right">→ Derecha</option>
               <option value="to left">← Izquierda</option>
@@ -112,48 +112,50 @@ export function GradientGenerator() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-medium">Colores del gradiente</h3>
-          <div className="flex gap-2">
-            <ActionButton onClick={addStop} variant="outline" disabled={stops.length >= 5}>
-              <Plus className="size-4" />
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <h3 className="text-xs sm:text-sm font-medium">Colores del gradiente</h3>
+          <div className="flex gap-1.5 sm:gap-2">
+            <ActionButton onClick={addStop} variant="outline" disabled={stops.length >= 5} className="h-8 sm:h-auto px-2 sm:px-3">
+              <Plus className="size-3 sm:size-4" />
             </ActionButton>
-            <ActionButton onClick={randomize} variant="outline">
-              <RefreshCw className="size-4" />
+            <ActionButton onClick={randomize} variant="outline" className="h-8 sm:h-auto px-2 sm:px-3">
+              <RefreshCw className="size-3 sm:size-4" />
             </ActionButton>
           </div>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {stops.map((stop, index) => (
-            <div key={index} className="flex items-center gap-3">
+            <div key={index} className="flex flex-wrap items-center gap-2 sm:gap-3">
               <input
                 type="color"
                 value={stop.color}
                 onChange={(e) => updateStop(index, "color", e.target.value)}
-                className="h-10 w-10 rounded-lg border border-border cursor-pointer"
+                className="h-8 sm:h-10 w-8 sm:w-10 rounded-lg border border-border cursor-pointer shrink-0"
               />
               <input
                 type="text"
                 value={stop.color}
                 onChange={(e) => updateStop(index, "color", e.target.value)}
-                className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm font-mono uppercase"
+                className="flex-1 min-w-[80px] sm:min-w-[100px] rounded-xl border border-border bg-background px-2 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-mono uppercase"
                 maxLength={7}
               />
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={stop.position}
-                onChange={(e) => updateStop(index, "position", Number(e.target.value))}
-                className="w-24"
-              />
-              <span className="text-xs text-muted-foreground w-8">{stop.position}%</span>
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={stop.position}
+                  onChange={(e) => updateStop(index, "position", Number(e.target.value))}
+                  className="w-12 sm:w-20"
+                />
+                <span className="text-[10px] sm:text-xs text-muted-foreground w-8 sm:w-10 text-right">{stop.position}%</span>
+              </div>
               {stops.length > 2 && (
                 <button
                   onClick={() => removeStop(index)}
-                  className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
+                  className="p-1.5 sm:p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors shrink-0"
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-3 sm:size-4" />
                 </button>
               )}
             </div>
@@ -163,16 +165,16 @@ export function GradientGenerator() {
 
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <FieldLabel htmlFor="css-output">CSS generado</FieldLabel>
-        <div className="mt-2 rounded-lg border border-border bg-muted p-4">
-          <code className="text-sm font-mono break-all">{css}</code>
+        <div className="mt-2 rounded-lg border border-border bg-muted p-2.5 sm:p-4">
+          <code className="text-[10px] sm:text-xs sm:text-sm font-mono break-all">{css}</code>
         </div>
-        <div className="mt-3 flex gap-2">
+        <div className="mt-2 sm:mt-3 flex gap-2">
           <CopyButton value={css} label="Copiar CSS" />
           <button
             onClick={downloadCSS}
-            className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted"
+            className="inline-flex items-center gap-1.5 sm:gap-2 rounded-lg px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors hover:bg-muted"
           >
-            <Download className="size-4" /> Descargar CSS
+            <Download className="size-3 sm:size-4" /> Descargar CSS
           </button>
         </div>
       </div>
@@ -180,7 +182,7 @@ export function GradientGenerator() {
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <FieldLabel>Vista previa</FieldLabel>
         <div
-          className="mt-2 rounded-xl h-48 w-full"
+          className="mt-2 rounded-xl h-36 sm:h-48 w-full"
           style={{ background: css }}
         />
       </div>

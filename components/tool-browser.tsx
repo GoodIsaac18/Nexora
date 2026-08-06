@@ -15,8 +15,10 @@ export function ToolBrowser() {
   const [visibleItems, setVisibleItems] = useState<Record<string, Set<number>>>({})
   const [scrolledCarousels, setScrolledCarousels] = useState<Record<string, boolean>>({})
   const [isMobile, setIsMobile] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
     checkMobile()
     window.addEventListener('resize', checkMobile)
@@ -60,6 +62,8 @@ export function ToolBrowser() {
 
   // Detectar elementos visibles y scroll en cada carrusel
   useEffect(() => {
+    if (!mounted) return
+    
     const updateVisibleItems = () => {
       Object.keys(carouselRefs.current).forEach(categorySlug => {
         const container = carouselRefs.current[categorySlug]
@@ -73,11 +77,8 @@ export function ToolBrowser() {
         items.forEach((item, index) => {
           const itemRect = item.getBoundingClientRect()
           
-          // Usar buffer para mejor detección en ambos móviles y PC
-          const buffer = isMobile ? 50 : 20
-          
-          // Si está dentro del área visible del contenedor (con buffer)
-          if (itemRect.left >= containerRect.left - buffer && itemRect.right <= containerRect.right + buffer) {
+          // Si está dentro del área visible del contenedor
+          if (itemRect.left >= containerRect.left && itemRect.right <= containerRect.right) {
             categoryVisible.add(index)
           }
         })
@@ -88,7 +89,7 @@ export function ToolBrowser() {
         }))
 
         // Detectar si el carrusel ha sido scrolleado
-        const hasScrolled = container.scrollLeft > 5 // Umbral más bajo para PC
+        const hasScrolled = container.scrollLeft > 5
         setScrolledCarousels(prev => ({
           ...prev,
           [categorySlug]: hasScrolled
@@ -96,36 +97,39 @@ export function ToolBrowser() {
       })
     }
 
-    // Actualizar inicialmente con un pequeño delay para asegurar que el DOM esté listo
-    const timeoutId = setTimeout(updateVisibleItems, 100)
-
-    // Actualizar en scroll con throttle para mejor rendimiento en móvil
-    let scrollTimeout: NodeJS.Timeout
-    Object.keys(carouselRefs.current).forEach(categorySlug => {
-      const container = carouselRefs.current[categorySlug]
-      if (container) {
-        container.addEventListener('scroll', () => {
-          clearTimeout(scrollTimeout)
-          scrollTimeout = setTimeout(updateVisibleItems, 50) // Throttle más rápido para móvil
-        }, { passive: true })
-      }
-    })
-
-    // Actualizar en resize
-    window.addEventListener('resize', updateVisibleItems)
-
-    return () => {
-      clearTimeout(timeoutId)
-      clearTimeout(scrollTimeout)
+    // Usar requestAnimationFrame para esperar al siguiente pintado del navegador
+    const frame = requestAnimationFrame(() => {
+      updateVisibleItems()
+      
+      // Actualizar en scroll con throttle
+      let scrollTimeout: NodeJS.Timeout
       Object.keys(carouselRefs.current).forEach(categorySlug => {
         const container = carouselRefs.current[categorySlug]
         if (container) {
-          container.removeEventListener('scroll', updateVisibleItems)
+          container.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout)
+            scrollTimeout = setTimeout(updateVisibleItems, 50)
+          }, { passive: true })
         }
       })
-      window.removeEventListener('resize', updateVisibleItems)
-    }
-  }, [grouped, isMobile])
+
+      // Actualizar en resize
+      window.addEventListener('resize', updateVisibleItems)
+
+      return () => {
+        clearTimeout(scrollTimeout)
+        Object.keys(carouselRefs.current).forEach(categorySlug => {
+          const container = carouselRefs.current[categorySlug]
+          if (container) {
+            container.removeEventListener('scroll', updateVisibleItems)
+          }
+        })
+        window.removeEventListener('resize', updateVisibleItems)
+      }
+    })
+
+    return () => cancelAnimationFrame(frame)
+  }, [grouped, mounted, isMobile])
 
   return (
     <div id="search" className="scroll-mt-24">
@@ -179,7 +183,7 @@ export function ToolBrowser() {
         ) : (
           <div className="flex flex-col gap-8 lg:gap-12">
             {grouped.map(({ category, items }, index) => (
-              <section key={category.slug} id={category.slug} className="scroll-mt-24 lg:scroll-mt-32 animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
+              <section key={category.slug} id={category.slug} className="scroll-mt-24 lg:scroll-mt-32" style={{ animationDelay: `${index * 100}ms` }}>
                 {index === 1 && (
                   <AdSlot placement="home-infeed" className="mb-8 lg:mb-10" />
                 )}
@@ -207,14 +211,14 @@ export function ToolBrowser() {
 
                   <div className="relative">
                     {/* Fade gradients */}
-                    <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-12 lg:w-16 bg-gradient-to-r from-background to-transparent pointer-events-none z-10" />
-                    <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-12 lg:w-16 bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
+                    <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-12 lg:w-16 bg-gradient-to-r from-background to-transparent pointer-events-none" />
+                    <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-12 lg:w-16 bg-gradient-to-l from-background to-transparent pointer-events-none" />
 
                     <div
                       ref={(el) => {
                         carouselRefs.current[category.slug] = el
                       }}
-                      className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 pt-2 pl-8 pr-8 sm:pl-12 sm:pr-12 lg:pl-16 lg:pr-16 scroll-smooth carousel-scrollbar"
+                      className="relative flex gap-3 sm:gap-4 overflow-x-auto pb-4 pt-2 pl-8 pr-8 sm:pl-12 sm:pr-12 lg:pl-16 lg:pr-16 scroll-smooth carousel-scrollbar"
                       style={{
                         scrollSnapType: 'x mandatory',
                         scrollPaddingInlineStart: isMobile ? '0px' : '32px',
@@ -226,7 +230,7 @@ export function ToolBrowser() {
                         const hasScrolled = scrolledCarousels[category.slug] || false
                         const isVisible = visibleItems[category.slug]?.has(i)
                         // Solo aplicar fade en móvil, en PC mostrar siempre visible
-                        const shouldFade = isMobile && hasScrolled && !isVisible
+                        const shouldFade = mounted && isMobile && hasScrolled && !isVisible
                         
                         return (
                           <div
@@ -236,8 +240,8 @@ export function ToolBrowser() {
                             className="flex-shrink-0 w-[85vw] sm:w-[80vw] md:w-[45vw] lg:w-[30vw] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
                             style={{
                               scrollSnapAlign: isMobile ? 'center' : 'start',
-                              opacity: isMobile && shouldFade ? 0.3 : 1,
-                              transform: isMobile && shouldFade ? 'scale(0.95)' : 'scale(1)',
+                              opacity: shouldFade ? 0.3 : 1,
+                              transform: shouldFade ? 'scale(0.95)' : 'scale(1)',
                               willChange: isMobile ? 'opacity, transform' : 'auto'
                             }}
                           >

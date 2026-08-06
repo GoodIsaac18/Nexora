@@ -170,37 +170,37 @@ export function ColorPaletteGenerator() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 sm:gap-6">
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <FieldLabel htmlFor="base-color">Color base</FieldLabel>
-        <div className="flex gap-3 mt-2">
+        <div className="flex gap-2 sm:gap-3 mt-2">
           <input
             id="base-color"
             type="color"
             value={baseColor}
             onChange={(e) => setBaseColor(e.target.value)}
-            className="h-12 w-12 rounded-lg border border-border cursor-pointer"
+            className="h-10 sm:h-12 w-10 sm:w-12 rounded-lg border border-border cursor-pointer"
           />
           <input
             type="text"
             value={baseColor}
             onChange={(e) => setBaseColor(e.target.value)}
-            className="flex-1 rounded-xl border border-border bg-background px-4 py-2 text-sm font-mono uppercase"
+            className="flex-1 rounded-xl border border-border bg-background px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-mono uppercase"
             placeholder="#000000"
             maxLength={7}
           />
-          <ActionButton onClick={generateRandomColor} variant="outline">
-            <RefreshCw className="size-4" />
+          <ActionButton onClick={generateRandomColor} variant="outline" className="h-10 sm:h-auto px-3 sm:px-4">
+            <RefreshCw className="size-3 sm:size-4" />
           </ActionButton>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-3 sm:mt-4">
           <FieldLabel htmlFor="harmony">Armonía de color</FieldLabel>
           <select
             id="harmony"
             value={harmony}
             onChange={(e) => setHarmony(e.target.value as HarmonyType)}
-            className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="mt-2 w-full rounded-xl border border-border bg-background px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="complementary">Complementario</option>
             <option value="analogous">Análogo</option>
@@ -212,34 +212,34 @@ export function ColorPaletteGenerator() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-medium">Paleta generada</h3>
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <h3 className="text-xs sm:text-sm font-medium">Paleta generada</h3>
           <button
             onClick={downloadPalette}
-            className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-muted"
+            className="inline-flex items-center gap-1.5 sm:gap-2 rounded-lg px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors hover:bg-muted"
           >
-            <Download className="size-4" /> Descargar
+            <Download className="size-3 sm:size-4" /> Descargar
           </button>
         </div>
-        <div className="grid gap-2">
+        <div className="grid gap-2 sm:gap-3">
           {palette.map((color, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 rounded-lg p-3 transition-all hover:scale-[1.02]"
+              className="flex items-center gap-2 sm:gap-3 rounded-lg p-2.5 sm:p-3 transition-all hover:scale-[1.02]"
               style={{ backgroundColor: color.hex }}
             >
-              <div className="flex-1">
-                <p className="font-mono text-sm font-bold" style={{ color: color.hsl.l > 50 ? "#000" : "#fff" }}>
+              <div className="flex-1 min-w-0">
+                <p className="font-mono text-xs sm:text-sm font-bold truncate" style={{ color: color.hsl.l > 50 ? "#000" : "#fff" }}>
                   {color.hex.toUpperCase()}
                 </p>
-                <p className="text-xs" style={{ color: color.hsl.l > 50 ? "#000" : "#fff" }}>
+                <p className="text-[10px] sm:text-xs truncate" style={{ color: color.hsl.l > 50 ? "#000" : "#fff" }}>
                   RGB: ${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}
                 </p>
-                <p className="text-xs" style={{ color: color.hsl.l > 50 ? "#000" : "#fff" }}>
+                <p className="text-[10px] sm:text-xs truncate" style={{ color: color.hsl.l > 50 ? "#000" : "#fff" }}>
                   HSL: ${Math.round(color.hsl.h)}°, ${Math.round(color.hsl.s)}%, ${Math.round(color.hsl.l)}%
                 </p>
               </div>
-              <CopyButton value={color.hex} label="Copiar" />
+              <CopyButton value={color.hex} label="Copiar" className="shrink-0" />
             </div>
           ))}
         </div>

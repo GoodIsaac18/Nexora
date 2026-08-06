@@ -53,13 +53,52 @@ export function BoxShadowGenerator() {
   const css = generateCSS()
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[350px_1fr]">
-      {/* Panel de controles - sticky para que siempre esté visible */}
-      <div className="space-y-4 lg:sticky lg:top-4 lg:h-fit">
+    <div className="flex flex-col gap-4 sm:gap-6 lg:grid lg:grid-cols-[350px_1fr]">
+      {/* Vista previa - visible en móvil arriba, a la derecha en PC */}
+      <div className="order-1 lg:order-2">
+        <h3 className="text-xs sm:text-sm font-medium mb-3 sm:mb-4">Vista previa</h3>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4">
+          <div
+            className="rounded-xl h-24 sm:h-40 flex items-center justify-center bg-background border border-border"
+            style={{ boxShadow: css }}
+          >
+            <span className="text-[10px] sm:text-sm text-muted-foreground">Fondo claro</span>
+          </div>
+          <div
+            className="rounded-xl h-24 sm:h-40 flex items-center justify-center bg-primary text-primary-foreground"
+            style={{ boxShadow: css }}
+          >
+            <span className="text-[10px] sm:text-sm">Fondo primario</span>
+          </div>
+          <div
+            className="rounded-xl h-24 sm:h-40 flex items-center justify-center bg-muted"
+            style={{ boxShadow: css }}
+          >
+            <span className="text-[10px] sm:text-sm text-muted-foreground">Fondo muted</span>
+          </div>
+          <div
+            className="rounded-xl h-24 sm:h-40 flex items-center justify-center bg-black text-white"
+            style={{ boxShadow: css }}
+          >
+            <span className="text-[10px] sm:text-sm">Fondo oscuro</span>
+          </div>
+        </div>
+        
+        <div
+          className="rounded-xl p-4 sm:p-8 bg-background border border-border"
+          style={{ boxShadow: css }}
+        >
+          <p className="text-[10px] sm:text-sm text-muted-foreground mb-1 sm:mb-2">Ejemplo de tarjeta</p>
+          <p className="text-xs sm:text-base">Este es un ejemplo de cómo se ve la sombra en un elemento más grande con contenido de texto.</p>
+        </div>
+      </div>
+
+      {/* Panel de controles - sticky en PC */}
+      <div className="order-2 lg:order-1 space-y-3 sm:space-y-4 lg:sticky lg:top-4 lg:h-fit">
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h3 className="text-sm font-medium mb-4">Controles</h3>
+          <h3 className="text-xs sm:text-sm font-medium mb-3 sm:mb-4">Controles</h3>
           
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div>
               <FieldLabel htmlFor="h-offset">Desplazamiento X</FieldLabel>
               <input
@@ -71,7 +110,7 @@ export function BoxShadowGenerator() {
                 onChange={(e) => setShadow({ ...shadow, hOffset: Number(e.target.value) })}
                 className="mt-2 w-full"
               />
-              <p className="mt-1 text-xs text-muted-foreground">{shadow.hOffset}px</p>
+              <p className="mt-1 text-[10px] sm:text-xs text-muted-foreground">{shadow.hOffset}px</p>
             </div>
 
             <div>
@@ -85,7 +124,7 @@ export function BoxShadowGenerator() {
                 onChange={(e) => setShadow({ ...shadow, vOffset: Number(e.target.value) })}
                 className="mt-2 w-full"
               />
-              <p className="mt-1 text-xs text-muted-foreground">{shadow.vOffset}px</p>
+              <p className="mt-1 text-[10px] sm:text-xs text-muted-foreground">{shadow.vOffset}px</p>
             </div>
 
             <div>
@@ -99,7 +138,7 @@ export function BoxShadowGenerator() {
                 onChange={(e) => setShadow({ ...shadow, blur: Number(e.target.value) })}
                 className="mt-2 w-full"
               />
-              <p className="mt-1 text-xs text-muted-foreground">{shadow.blur}px</p>
+              <p className="mt-1 text-[10px] sm:text-xs text-muted-foreground">{shadow.blur}px</p>
             </div>
 
             <div>
@@ -113,7 +152,7 @@ export function BoxShadowGenerator() {
                 onChange={(e) => setShadow({ ...shadow, spread: Number(e.target.value) })}
                 className="mt-2 w-full"
               />
-              <p className="mt-1 text-xs text-muted-foreground">{shadow.spread}px</p>
+              <p className="mt-1 text-[10px] sm:text-xs text-muted-foreground">{shadow.spread}px</p>
             </div>
 
             <div>
@@ -131,13 +170,13 @@ export function BoxShadowGenerator() {
                     const currentOpacity = shadow.color.match(/[\d.]+\)$/)?.[0] || "0.1)"
                     setShadow({ ...shadow, color: `rgba(${r}, ${g}, ${b}, ${currentOpacity}` })
                   }}
-                  className="h-10 w-10 rounded-lg border border-border cursor-pointer"
+                  className="h-8 sm:h-10 w-8 sm:w-10 rounded-lg border border-border cursor-pointer shrink-0"
                 />
                 <input
                   type="text"
                   value={shadow.color}
                   onChange={(e) => setShadow({ ...shadow, color: e.target.value })}
-                  className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-xs font-mono"
+                  className="flex-1 rounded-lg border border-border bg-background px-2 sm:px-3 py-2 text-[10px] sm:text-xs font-mono"
                   placeholder="rgba(0, 0, 0, 0.1)"
                 />
               </div>
@@ -157,7 +196,7 @@ export function BoxShadowGenerator() {
                   }}
                   className="mt-2 w-full"
                 />
-                <p className="mt-1 text-xs text-muted-foreground">{shadow.color.match(/[\d.]+\)$/)?.[0]?.replace(")", "") || "0.1"}</p>
+                <p className="mt-1 text-[10px] sm:text-xs text-muted-foreground">{shadow.color.match(/[\d.]+\)$/)?.[0]?.replace(")", "") || "0.1"}</p>
               </div>
             </div>
 
@@ -166,73 +205,30 @@ export function BoxShadowGenerator() {
                 type="checkbox"
                 checked={shadow.inset}
                 onChange={(e) => setShadow({ ...shadow, inset: e.target.checked })}
-                className="w-4 h-4 rounded border-border"
+                className="w-3 sm:w-4 h-3 sm:h-4 rounded border-border"
               />
-              <span className="text-xs font-medium">Inset (sombra interna)</span>
+              <span className="text-[10px] sm:text-xs font-medium">Inset (sombra interna)</span>
             </label>
 
-            <ActionButton onClick={randomize} variant="outline" className="w-full">
-              <RefreshCw className="size-4" /> Aleatorio
+            <ActionButton onClick={randomize} variant="outline" className="w-full h-9 sm:h-auto">
+              <RefreshCw className="size-3 sm:size-4" /> Aleatorio
             </ActionButton>
           </div>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <FieldLabel htmlFor="css-output">CSS generado</FieldLabel>
-          <div className="mt-2 rounded-lg border border-border bg-muted p-3">
-            <code className="text-xs font-mono break-all">box-shadow: {css};</code>
+          <div className="mt-2 rounded-lg border border-border bg-muted p-2 sm:p-3">
+            <code className="text-[10px] sm:text-xs font-mono break-all">box-shadow: {css};</code>
           </div>
-          <div className="mt-3 flex gap-2">
+          <div className="mt-2 sm:mt-3 flex gap-2">
             <CopyButton value={`box-shadow: ${css};`} label="Copiar" />
             <button
               onClick={downloadCSS}
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors hover:bg-muted"
+              className="inline-flex items-center gap-1.5 sm:gap-2 rounded-lg px-2 sm:px-3 py-1.5 text-[10px] sm:text-xs font-medium transition-colors hover:bg-muted"
             >
-              <Download className="size-4" /> Descargar
+              <Download className="size-3 sm:size-4" /> Descargar
             </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Panel de vista previa - siempre visible */}
-      <div className="space-y-4">
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-          <h3 className="text-sm font-medium mb-4">Vista previa</h3>
-          <div className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div
-                className="rounded-xl h-40 flex items-center justify-center bg-background border border-border"
-                style={{ boxShadow: css }}
-              >
-                <span className="text-sm text-muted-foreground">Fondo claro</span>
-              </div>
-              <div
-                className="rounded-xl h-40 flex items-center justify-center bg-primary text-primary-foreground"
-                style={{ boxShadow: css }}
-              >
-                <span className="text-sm">Fondo primario</span>
-              </div>
-              <div
-                className="rounded-xl h-40 flex items-center justify-center bg-muted"
-                style={{ boxShadow: css }}
-              >
-                <span className="text-sm text-muted-foreground">Fondo muted</span>
-              </div>
-              <div
-                className="rounded-xl h-40 flex items-center justify-center bg-black text-white"
-                style={{ boxShadow: css }}
-              >
-                <span className="text-sm">Fondo oscuro</span>
-              </div>
-            </div>
-            
-            <div
-              className="rounded-xl p-8 bg-background border border-border"
-              style={{ boxShadow: css }}
-            >
-              <p className="text-sm text-muted-foreground mb-2">Ejemplo de tarjeta</p>
-              <p className="text-base">Este es un ejemplo de cómo se ve la sombra en un elemento más grande con contenido de texto.</p>
-            </div>
           </div>
         </div>
       </div>
